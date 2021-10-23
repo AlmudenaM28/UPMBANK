@@ -1,9 +1,4 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Random;
 import java.util.Scanner;
 
 public class todosLosMenus {
@@ -48,10 +43,10 @@ public class todosLosMenus {
                     System.out.println("Debe darse de alta.");
                 }
             } else if (opcion.equals("3")) {
-                if(cuentaCreada) {
+                if (cuentaCreada) {
                     realizarDeposito();
                     stayMenu = false;
-                }else{
+                } else {
                     System.out.println("Primero debe crear una cuenta");
                 }
             } else if (opcion.equals("4")) {
@@ -143,9 +138,8 @@ public class todosLosMenus {
 
                 if (validarFecha.validar(dia, mes, anio)) {
                     fechaCorrecta = true;
+                    dadoAlta = true;
                 }
-
-                dadoAlta = true;
 
             } while (!fechaCorrecta);
         }
@@ -256,7 +250,6 @@ public class todosLosMenus {
     }
 
 
-
     public static void realizarExtraccion() throws IOException {
         upmBankAscii.logo();
         Scanner scan = new Scanner(System.in);
@@ -275,9 +268,9 @@ public class todosLosMenus {
                         try {
                             String extraccion = scan.nextLine();
                             double extrNum = Double.parseDouble(extraccion);
-                            if(extrNum > saldo){
+                            if (extrNum > saldo) {
                                 System.out.println("Fondos insuficientes");
-                            }else {
+                            } else {
                                 if (extrNum > 0) {
                                     saldo -= extrNum;
                                     System.out.println("Extracción realizada con éxito.");
@@ -300,7 +293,6 @@ public class todosLosMenus {
             }
         }
     }
-
 
 
     public static void consultaDatos() throws IOException {
