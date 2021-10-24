@@ -1,16 +1,15 @@
-import java.io.IOException;
 import java.util.Scanner;
 
 public class todosLosMenus {
 
     static double saldo = 0;
     static String numero;
-    static StringBuilder transacciones = new StringBuilder();
-    static StringBuilder datosCliente = new StringBuilder();
+    static String transacciones = "\n";
+    static String datosCliente = "\n";
     static boolean dadoAlta = false;
     static boolean cuentaCreada = false;
 
-    public static void menuInicial() throws IOException {
+    public static void menuInicial() {
         Scanner scan = new Scanner(System.in);
         boolean stayMenu = true;
         upmBankAscii.logo();
@@ -72,7 +71,7 @@ public class todosLosMenus {
     }
 
 
-    public static void darseDeAlta() throws IOException {
+    public static void darseDeAlta() {
 
         upmBankAscii.logo();
 
@@ -144,11 +143,11 @@ public class todosLosMenus {
             } while (!fechaCorrecta);
         }
 
-        datosCliente.append("\n" + nombreCompleto + "\n" + dni + "\n" + correo + "\n" + fechaFinal + "\nCuentas: \n\t");
+        datosCliente += ("\n" + nombreCompleto + "\n" + dni + "\n" + correo + "\n" + fechaFinal + "\nCuentas: \n\t");
         menuInicial();
     }
 
-    public static void crearCuentaBancaria() throws IOException {
+    public static void crearCuentaBancaria() {
         Scanner scan = new Scanner(System.in);
         upmBankAscii.logo();
         System.out.println("Crear cuenta\nPulse ENTER para continuar o '0' para volver.");
@@ -191,13 +190,13 @@ public class todosLosMenus {
             numero = new numeroCuenta().obtenerNumeroCuenta();
             System.out.println(nombreCompleto);
             if (cuentaAhorro) {
-                datosCliente.append(numero + " Cuenta ahorro\t");
+                datosCliente += (numero + " Cuenta ahorro\t");
                 System.out.println("Cuenta de ahorro");
             } else if (cuentaRemunerada) {
-                datosCliente.append(numero + " Cuenta remunerada\t");
+                datosCliente += (numero + " Cuenta remunerada\t");
                 System.out.println("Cuenta remunerada");
             } else {
-                datosCliente.append(numero + " Cuenta corriente\t");
+                datosCliente += (numero + " Cuenta corriente\t");
                 System.out.println("Cuenta corriente");
             }
             System.out.println("Número de cuenta: " + numero);
@@ -209,7 +208,7 @@ public class todosLosMenus {
     }
 
 
-    public static void realizarDeposito() throws IOException {
+    public static void realizarDeposito() {
         upmBankAscii.logo();
         Scanner scan = new Scanner(System.in);
         System.out.println("Realizar depósito\nPulse ENTER para continuar o '0' para volver.");
@@ -231,7 +230,7 @@ public class todosLosMenus {
                                 saldo += ingresoNum;
                                 System.out.println("Ingreso realizado con éxito.");
                                 System.out.println("[" + numero + "] Saldo de la cuenta: " + saldo + "€");
-                                transacciones.append("\n[" + numero + "] " + "+" + ingresoNum + "€ " + "Saldo: " + saldo + "€");
+                                transacciones += ("\n[" + numero + "] " + "+" + ingresoNum + "€ " + "Saldo: " + saldo + "€");
                                 menuIngreso = false;
                                 menuPrincipal = false;
                                 System.out.println("Pulse ENTER para continuar");
@@ -250,7 +249,7 @@ public class todosLosMenus {
     }
 
 
-    public static void realizarExtraccion() throws IOException {
+    public static void realizarExtraccion() {
         upmBankAscii.logo();
         Scanner scan = new Scanner(System.in);
         System.out.println("Realizar extracción\nPulse ENTER para continuar o '0' para volver.");
@@ -275,7 +274,7 @@ public class todosLosMenus {
                                     saldo -= extrNum;
                                     System.out.println("Extracción realizada con éxito.");
                                     System.out.println("[" + numero + "] Saldo de la cuenta: " + saldo + "€");
-                                    transacciones.append("\n[" + numero + "] " + "-" + extrNum + "€ " + "Saldo: " + saldo + "€");
+                                    transacciones += ("\n[" + numero + "] " + "-" + extrNum + "€ " + "Saldo: " + saldo + "€");
                                     menuIngreso = false;
                                     menuPrincipal = false;
                                     System.out.println("Pulse ENTER para continuar");
@@ -295,7 +294,7 @@ public class todosLosMenus {
     }
 
 
-    public static void consultaDatos() throws IOException {
+    public static void consultaDatos() {
         upmBankAscii.logo();
         Scanner scan = new Scanner(System.in);
         System.out.println("Consultar datos de cliente\nPulse ENTER para continuar o '0' para volver.");
@@ -322,3 +321,4 @@ public class todosLosMenus {
         }
     }
 }
+
