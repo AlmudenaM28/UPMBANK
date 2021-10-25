@@ -264,7 +264,7 @@ public class todosLosMenus {
                 if (cuentaObjetivo.equals(numero)) {
                     while (menuIngreso) {
                         System.out.println("Escriba la cantidad de dinero que desea extraer: ");
-                        try {
+                        try { //Se usa la excepcion para que no  crashee al parsear en caso de poner una letra por ejemplo
                             String extraccion = scan.nextLine();
                             double extrNum = Double.parseDouble(extraccion);
                             if (extrNum > saldo) {

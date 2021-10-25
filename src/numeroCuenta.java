@@ -10,7 +10,11 @@ public class numeroCuenta {
 
         int c1 = 0;
         String CE = "9010";
-        int a = 11 - ((6 * CE.charAt(3) + 3 * CE.charAt(2) + 7 * CE.charAt(1) + 9 * CE.charAt(0)) % 11);
+        int CE_1 = 9;
+        int CE_2 = 0;
+        int CE_3 = 1;
+        int CE_4 = 0;
+        int a = 11 - ((6 * CE_1 + 3 * CE_2 + 7 * CE_3 + 9 * CE_4) % 11);
         if (a < 10) {
             c1 = a;
         } else if (a == 10) {
@@ -21,12 +25,27 @@ public class numeroCuenta {
 
 
         int c2 = 0;
-        StringBuilder NC = new StringBuilder();
-        for (int i = 0; i < 10; i++) {
-            NC.append(random.nextInt(9));
-        }
-        int b = 11 - ((NC.charAt(1) + 2 * NC.charAt(2) + 4 * NC.charAt(3) + 8 * NC.charAt(4) + 5 * NC.charAt(5)
-                + 10 * NC.charAt(6) + 9 * NC.charAt(7) + 7 * NC.charAt(8) + 3 * NC.charAt(9)) % 11);
+        int r1= random.nextInt(9),
+                r2= random.nextInt(9),
+                r3= random.nextInt(9),
+                r4= random.nextInt(9),
+                r5= random.nextInt(9),
+                r6= random.nextInt(9),
+                r7= random.nextInt(9),
+                r8 = random.nextInt(9),
+                r9 = random.nextInt(9),
+                r10 = random.nextInt(9);
+        String NC = Integer.toString(r1)
+                + Integer.toString(r2)
+                + Integer.toString(r3)
+                + Integer.toString(r4)
+                + Integer.toString(r5)
+                +Integer.toString(r6)
+                + Integer.toString(r7)
+                + Integer.toString(r8)
+                + Integer.toString(r9)
+                + Integer.toString(r10);
+        int b = 11 - ((r1 + 2 * r2 + 4 * r3 + 8 * r4 + 5 * r5 + 10 * r6 + 9 * r7 + 7 * r8 + 3 * r9) % 11);
         if (b < 10) {
             c2 = b;
         } else if (b == 10) {
