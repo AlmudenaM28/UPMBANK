@@ -1,5 +1,4 @@
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 public class todosLosMenus {
@@ -10,8 +9,7 @@ public class todosLosMenus {
     static String datosCliente = "\n";
     static boolean dadoAlta = false;
     static boolean cuentaCreada = false;
-    static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/uuuu");
-    static LocalDate localDate = LocalDate.now();
+    static LocalDate fecha = LocalDate.now();
     static int contadorOperaciones = 1;
 
     public static void menuInicial() {
@@ -32,6 +30,7 @@ public class todosLosMenus {
                     \t3)Realizar depósito
                     \t4)Realizar extracción
                     \t5)Datos de cliente
+                    \t6)Hacer transferecia  
                     \t0)Salir
 
                     """);
@@ -54,11 +53,14 @@ public class todosLosMenus {
                     System.out.println("Primero debe crear una cuenta");
                 }
             } else if (opcion.equals("4")) {
-                if (cuentaCreada) {
+                if (cuentaCreada && saldo != 0) {
                     realizarExtraccion();
                     stayMenu = false;
-                } else {
-                    System.out.println("Primero debe crear una cuenta");
+                } else if (saldo == 0){
+                    System.out.println("Fondos insuficientes.");
+                    menuInicial();
+                }else {
+                    System.out.println("Primero crearse una cuenta.");
                 }
             } else if (opcion.equals("5")) {
                 if (dadoAlta) {
@@ -66,6 +68,16 @@ public class todosLosMenus {
                     stayMenu = false;
                 } else {
                     System.out.println("Debe darse de alta.");
+                }
+            } else if (opcion.equals("6")) {
+                if (cuentaCreada && saldo != 0) {
+                    hacerTransferencia();
+                    stayMenu = false;
+                } else if (saldo == 0){
+                    System.out.println("Fondos insuficientes.");
+                    menuInicial();
+                }else {
+                    System.out.println("Primero crearse una cuenta.");
                 }
             } else if (opcion.equals("0")) {
                 stayMenu = false;
@@ -192,7 +204,7 @@ public class todosLosMenus {
 
             }
 
-            numero = new numeroCuenta().obtenerNumeroCuenta();
+            numero = ("90100201" + new numeroCuenta().obtenerNumeroCuenta());
             System.out.println(nombreCompleto);
             if (cuentaAhorro) {
                 datosCliente += (numero + " Cuenta ahorro\t");
@@ -235,7 +247,7 @@ public class todosLosMenus {
                                 saldo += ingresoNum;
                                 System.out.println("Ingreso realizado con éxito.");
                                 System.out.println("[" + numero + "] Saldo de la cuenta: " + saldo + "€");
-                                transacciones += ("\n[" + numero + "]\t" + contadorOperaciones + ".\t+" + ingresoNum + "€ " + "Saldo: " + saldo + "€\t" + localDate);
+                                transacciones += ("\nDepósito\t\t[" + numero + "]\t" + contadorOperaciones + ".\t+" + ingresoNum + "€ " + "Saldo: " + saldo + "€\t" + fecha);
                                 contadorOperaciones++;
                                 menuIngreso = false;
                                 menuPrincipal = false;
@@ -280,7 +292,8 @@ public class todosLosMenus {
                                     saldo -= extrNum;
                                     System.out.println("Extracción realizada con éxito.");
                                     System.out.println("[" + numero + "] Saldo de la cuenta: " + saldo + "€");
-                                    transacciones += ("\n[" + numero + "]\t" + contadorOperaciones + ".\t-" + extrNum + "€ " + "Saldo: " + saldo + "€\t" + localDate);
+                                    transacciones += ("\nExtracción\t\t[" + numero + "]\t" + contadorOperaciones + ".\t-" + extrNum + "€ " + "Saldo: " + saldo + "€\t" + fecha);
+                                    contadorOperaciones++;
                                     menuIngreso = false;
                                     menuPrincipal = false;
                                     System.out.println("Pulse ENTER para continuar");
@@ -307,7 +320,7 @@ public class todosLosMenus {
         String volver = scan.nextLine();
         boolean menu = true;
         if (!volver.equals("0")) {
-            System.out.println(datosCliente);
+            System.out.println(datosCliente + saldo + "€");
             while (menu) {
                 System.out.println("\n1)Ver transacciones\n2)Salir");
                 String opcion = scan.nextLine();
@@ -326,5 +339,58 @@ public class todosLosMenus {
             }
         }
     }
+
+    public static void hacerTransferencia() {
+        upmBankAscii.logo();
+        Scanner scan = new Scanner(System.in);
+        System.out.println("Hacer una transferencia\nPulse ENTER para continuar o '0' para volver.");
+        String volver = scan.nextLine();
+        boolean menu = true;
+        if (!volver.equals("0")) {
+            while (menu) {
+                System.out.println("Cuenta de origen: " + numero + "\nPor favor ingrese el número de cuenta destinatario: ");
+                String numeroDestino = scan.nextLine();
+                if (!numeroDestino.startsWith("9010")) {
+                    System.out.println("Solo se pueden realizar transferencias a cuentas de UPMBank");
+                } else if (numeroDestino.length() != 20) {
+                    System.out.println("Número de cuenta inválido");
+                }else if (numeroDestino.equals(numero)){
+                    System.out.println("No puede hacerse una trasferencia a si mismo.");
+                }else{
+                    boolean menuTransferencia = true;
+                    while (menuTransferencia) {
+                        try {
+                            System.out.println("Ingrese la cantidad de dinero que desea transferir: ");
+                            double transferencia = scan.nextDouble();
+                            if (transferencia < 0) {
+                                System.out.println("Cifra inválida intente de nuevo");
+                            } else if(transferencia > saldo){
+                                System.out.println("Fondos insuficientes.");
+                            } else{
+                                saldo -= transferencia;
+                                transacciones += ("\nTransferencia\t[" + numero + "]\t" + contadorOperaciones + ".\t-" + transferencia + "€ " + "Saldo: " + saldo + "€\t" + fecha + "\tDestino: [" + numeroDestino + "]");
+                                contadorOperaciones++;
+                                System.out.println("Pulse ENTER para continuar");
+                                scan.nextLine();
+                                menuTransferencia = false;
+                                menu = false;
+                                menuInicial();
+                            }
+                        }catch(Exception e){
+                            System.out.println("Error, intente de nuevo.");
+                            hacerTransferencia();
+                        }
+                    }
+                }
+        }
+    }
+}
+
+
+
+
+
+
+
 }
 
