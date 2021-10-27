@@ -56,10 +56,10 @@ public class todosLosMenus {
                 if (cuentaCreada && saldo != 0) {
                     realizarExtraccion();
                     stayMenu = false;
-                } else if (saldo == 0){
+                } else if (saldo == 0) {
                     System.out.println("Fondos insuficientes.");
                     menuInicial();
-                }else {
+                } else {
                     System.out.println("Primero crearse una cuenta.");
                 }
             } else if (opcion.equals("5")) {
@@ -73,11 +73,18 @@ public class todosLosMenus {
                 if (cuentaCreada && saldo != 0) {
                     hacerTransferencia();
                     stayMenu = false;
-                } else if (saldo == 0){
+                } else if (saldo == 0) {
                     System.out.println("Fondos insuficientes.");
                     menuInicial();
-                }else {
+                } else {
                     System.out.println("Primero crearse una cuenta.");
+                }
+            } else if (opcion.equals("7")) {
+                if (cuentaCreada) {
+                    prestamoHipotecario();
+                } else {
+                    System.out.println("Primero debe crear una cuenta.");
+                    menuInicial();
                 }
             } else if (opcion.equals("0")) {
                 stayMenu = false;
@@ -354,9 +361,9 @@ public class todosLosMenus {
                     System.out.println("Solo se pueden realizar transferencias a cuentas de UPMBank");
                 } else if (numeroDestino.length() != 20) {
                     System.out.println("Número de cuenta inválido");
-                }else if (numeroDestino.equals(numero)){
+                } else if (numeroDestino.equals(numero)) {
                     System.out.println("No puede hacerse una trasferencia a si mismo.");
-                }else{
+                } else {
                     boolean menuTransferencia = true;
                     while (menuTransferencia) {
                         try {
@@ -364,9 +371,9 @@ public class todosLosMenus {
                             double transferencia = scan.nextDouble();
                             if (transferencia < 0) {
                                 System.out.println("Cifra inválida intente de nuevo");
-                            } else if(transferencia > saldo){
+                            } else if (transferencia > saldo) {
                                 System.out.println("Fondos insuficientes.");
-                            } else{
+                            } else {
                                 saldo -= transferencia;
                                 transacciones += ("\nTransferencia\t[" + numero + "]\t" + contadorOperaciones + ".\t-" + transferencia + "€ " + "Saldo: " + saldo + "€\t" + fecha + "\tDestino: [" + numeroDestino + "]");
                                 contadorOperaciones++;
@@ -376,21 +383,25 @@ public class todosLosMenus {
                                 menu = false;
                                 menuInicial();
                             }
-                        }catch(Exception e){
+                        } catch (Exception e) {
                             System.out.println("Error, intente de nuevo.");
                             hacerTransferencia();
                         }
                     }
                 }
+            }
         }
     }
-}
+
+    public static void prestamoHipotecario() {
+        upmBankAscii.logo();
+        Scanner scan = new Scanner(System.in);
+        System.out.println("Pedir un préstamo hipotecario\nPulse ENTER para continuar o '0' para volver.");
+        String volver = scan.nextLine();
+        if (!volver.equals("0")) {
 
 
-
-
-
-
-
+        }
+    }
 }
 
