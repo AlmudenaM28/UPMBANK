@@ -35,16 +35,8 @@ public class numeroCuenta {
                 r8 = random.nextInt(9),
                 r9 = random.nextInt(9),
                 r10 = random.nextInt(9);
-        String NC = Integer.toString(r1)
-                + Integer.toString(r2)
-                + Integer.toString(r3)
-                + Integer.toString(r4)
-                + Integer.toString(r5)
-                +Integer.toString(r6)
-                + Integer.toString(r7)
-                + Integer.toString(r8)
-                + Integer.toString(r9)
-                + Integer.toString(r10);
+
+        String NC = Integer.toString(r1) + r2 + r3 + r4 + r5 + r6 + r7 + r8 + r9 + r10;
         int b = 11 - ((r1 + 2 * r2 + 4 * r3 + 8 * r4 + 5 * r5 + 10 * r6 + 9 * r7 + 7 * r8 + 3 * r9) % 11);
         if (b < 10) {
             c2 = b;

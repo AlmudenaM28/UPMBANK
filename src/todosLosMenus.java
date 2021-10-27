@@ -1,3 +1,5 @@
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 public class todosLosMenus {
@@ -8,6 +10,9 @@ public class todosLosMenus {
     static String datosCliente = "\n";
     static boolean dadoAlta = false;
     static boolean cuentaCreada = false;
+    static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/uuuu");
+    static LocalDate localDate = LocalDate.now();
+    static int contadorOperaciones = 1;
 
     public static void menuInicial() {
         Scanner scan = new Scanner(System.in);
@@ -230,7 +235,8 @@ public class todosLosMenus {
                                 saldo += ingresoNum;
                                 System.out.println("Ingreso realizado con éxito.");
                                 System.out.println("[" + numero + "] Saldo de la cuenta: " + saldo + "€");
-                                transacciones += ("\n[" + numero + "] " + "+" + ingresoNum + "€ " + "Saldo: " + saldo + "€");
+                                transacciones += ("\n[" + numero + "]\t" + contadorOperaciones + ".\t+" + ingresoNum + "€ " + "Saldo: " + saldo + "€\t" + localDate);
+                                contadorOperaciones++;
                                 menuIngreso = false;
                                 menuPrincipal = false;
                                 System.out.println("Pulse ENTER para continuar");
@@ -274,7 +280,7 @@ public class todosLosMenus {
                                     saldo -= extrNum;
                                     System.out.println("Extracción realizada con éxito.");
                                     System.out.println("[" + numero + "] Saldo de la cuenta: " + saldo + "€");
-                                    transacciones += ("\n[" + numero + "] " + "-" + extrNum + "€ " + "Saldo: " + saldo + "€");
+                                    transacciones += ("\n[" + numero + "]\t" + contadorOperaciones + ".\t-" + extrNum + "€ " + "Saldo: " + saldo + "€\t" + localDate);
                                     menuIngreso = false;
                                     menuPrincipal = false;
                                     System.out.println("Pulse ENTER para continuar");
