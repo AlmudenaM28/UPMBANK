@@ -15,7 +15,7 @@ public class todosLosMenus {
     static long numCuenta = 0;
     static int DC = 0;
     static String IBAN = "";
-    static double interesDouble = 0;
+    static double interesFloat = 0;
     static double prestamo = 0;
     static int aniosPrestamo;
     static boolean prestamoHipotecario = false;
@@ -247,6 +247,7 @@ public class todosLosMenus {
             System.out.println("Saldo: " + saldo + "€");
             System.out.println("Pulse ENTER para continuar");
             scan.nextLine();
+            scan.nextLine();
         }
         menuInicial();
     }
@@ -274,6 +275,7 @@ public class todosLosMenus {
                             contadorOperaciones++;
                             menuPrincipal = false;
                             System.out.println("Pulse ENTER para continuar");
+                            scan.nextLine();
                             scan.nextLine();
                             menuInicial();
                         } else {
@@ -313,6 +315,7 @@ public class todosLosMenus {
                                 menuPrincipal = false;
                                 System.out.println("Pulse ENTER para continuar");
                                 scan.nextLine();
+                                scan.nextLine();
                                 menuInicial();
                             } else {
                                 System.out.println("Cifra inválida, intente de nuevo.");
@@ -340,6 +343,7 @@ public class todosLosMenus {
                 if (opcion.equals("1")) {
                     System.out.println(transacciones);
                     System.out.println("\n Pulse ENTER para continuar");
+                    scan.nextLine();
                     scan.nextLine();
                     menu = false;
                     menuInicial();
@@ -385,6 +389,7 @@ public class todosLosMenus {
                                 contadorOperaciones++;
                                 System.out.println("Pulse ENTER para continuar");
                                 scan.nextLine();
+                                scan.nextLine();
                                 menuTransferencia = false;
                                 menu = false;
                                 menuInicial();
@@ -407,33 +412,53 @@ public class todosLosMenus {
         System.out.println("Pedir un préstamo hipotecario\nPulse ENTER para continuar o '0' para volver.");
         String volver = scan.nextLine();
         if (!volver.equals("0")) {
-            do {
-                System.out.println("Introduzca la cantidad que desea solicitar: ");
-                prestamo = scan.nextDouble();
-            }while(prestamo < 0 || prestamo == 0);
 
-            do{
+            boolean prestamoValido = false,interesValido = false, aniosValido = false;
+
+            while (!prestamoValido) {
+                System.out.println("Introduzca la cantidad que desea solicitar: ");
+                prestamo = scan.nextFloat();
+                if(prestamo <= 0){
+                    System.out.println("Cifra inválida. Intente de nuevo.");
+                }else{
+                    prestamoValido = true;
+                }
+            }
+
+            while (!interesValido) {
                 System.out.println("Introduzca el interés anual en %: ");
                 interes = scan.nextInt();
-            }while(prestamo < 0 || prestamo > 100);
+                if(interes <= 0 | interes > 100){
+                    System.out.println("Porcentaje inválido. El porcentaje debe estar entre 0 y 100");
+                }else{
+                    interesValido = true;
+                }
+            }
 
-            do{
+            while (!aniosValido) {
                 System.out.println("Introduzca el número de años en que desea pagarlo: ");
                 aniosPrestamo = scan.nextInt();
-            }while(aniosPrestamo <= 0);
+                if(aniosPrestamo<=0){
+                    System.out.println("Número de años inválido");
+                }else if(aniosPrestamo > 30){
+                    System.out.println("El número máximo de años es 30");
+                }else{
+                aniosValido = true;
+                }
+            }
 
-            interesDouble = (double) interes/100;
 
-            System.out.printf("Préstamo de %f€ a un interés del %d%% concedido.", prestamo, interes);
+            interesFloat = (double) interes/100;
+
+            System.out.printf("Préstamo de %.2f€ a un interés del %d%% concedido en %d años.", prestamo, interes,aniosPrestamo);
             saldo += prestamo;
 
-            transacciones += ("\nPréstamo\t[" + IBAN + "]\t" + contadorOperaciones + ".\t-" + prestamo + "€ " + "Saldo: " + saldo + "€\t" + fecha);
-
+            transacciones += ("\nPréstamo\t\t[" + IBAN + "]\t" + contadorOperaciones + ".\t+" + prestamo + "€ " + "Saldo: " + saldo + "€\t" + fecha);
+            contadorOperaciones++;
             prestamoHipotecario = true;
 
-            System.out.println("Pulse ENTER para continuar");
+            System.out.println("\nPulse ENTER para continuar");
             scan.nextLine();
-            tablaAmortizacion();
         }else{
             menuInicial();
         }
@@ -441,26 +466,23 @@ public class todosLosMenus {
     public static void tablaAmortizacion (){
 
         Scanner scan = new Scanner(System.in);
+        upmBankAscii.logo();
+        System.out.println("Mostrar tabla de amortización\nPulse ENTER para continuar");
+        scan.nextLine();
 
-        System.out.printf("%8s %8s %8s %8s \n", "","PAGO MENSUAL", "INTERESES", "AMORTIZADO", "CAPITAL VIVO");
+        System.out.printf("\n%18s %18s %18s %18s %18s \n", "","PAGO MENSUAL", "INTERESES", "AMORTIZADO", "CAPITAL VIVO");
 
         double capitalVivo = prestamo;
-        double interesMensual = interesDouble/12;
-        int numeroMeses = aniosPrestamo / 12;
-
+        double interesMensual = interesFloat /12;
+        int numeroMeses = aniosPrestamo * 12;
+        System.out.printf("%18d %18d %18d %18d %18.2f \n", 0, 0, 0, 0, capitalVivo);
         double pagoMensual = capitalVivo * interesMensual * ((Math.pow(1+interesMensual,numeroMeses))/((Math.pow(1+interesMensual,numeroMeses))-1));
-
-        for (int i = 0; i <= numeroMeses; i++) {
-            if (i == 0) {
-                System.out.printf("%8d %8d %8d %8.2f", i, 0, 0, 0, capitalVivo);
-            } else {
-                double intereses = capitalVivo * interesMensual;
-                double amortizado = pagoMensual - intereses;
-                capitalVivo -= amortizado;
-                System.out.printf("%8d %8.2f %8.2f %8.2f %8.2f", i, pagoMensual, intereses, amortizado, capitalVivo);
-            }
+        for (int i = 1;i < numeroMeses;i++) {
+            double intereses = capitalVivo * interesMensual;
+            double amortizado = pagoMensual - intereses;
+            capitalVivo -= amortizado;
+            System.out.printf("%18d %18.2f %18.2f %18.2f %18.2f \n", i, pagoMensual, intereses, amortizado, capitalVivo);
         }
-
 
         System.out.println("Pulse ENTER para continuar");
         scan.nextLine();
