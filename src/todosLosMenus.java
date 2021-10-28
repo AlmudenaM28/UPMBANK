@@ -30,20 +30,7 @@ public class todosLosMenus {
                 error. Esto evita que el programa se detenga al introducir texto en un nextInt() .
              */
 
-            System.out.print("""
-
-                    Introduzca la operación que desea realizar:
-                    \t1)Darse de alta
-                    \t2)Crear cuenta
-                    \t3)Realizar depósito
-                    \t4)Realizar extracción
-                    \t5)Datos de cliente
-                    \t6)Hacer transferecia  
-                    \t7)Pedir préstamo hipotecario
-                    \t8)Consultar tabla de amortización
-                    \t0)Salir
-
-                    """);
+            System.out.print("Introduzca la operación que desea realizar:\n\t1)Darse de alta\n\t2)Crear cuenta\n\t3)Realizar depósito\n\t4)Realizar extracción\n\t5)Datos de cliente\n\t6)Hacer transferecia\n\t7)Pedir préstamo hipotecario\n\t8)Consultar tabla de amortización\n\t0)Salir\n");
             String opcion = scan.nextLine();
             if (opcion.equals("1")) {
                 stayMenu = false;
@@ -477,7 +464,7 @@ public class todosLosMenus {
         int numeroMeses = aniosPrestamo * 12;
         System.out.printf("%18d %18d %18d %18d %18.2f \n", 0, 0, 0, 0, capitalVivo);
         double pagoMensual = capitalVivo * interesMensual * ((Math.pow(1+interesMensual,numeroMeses))/((Math.pow(1+interesMensual,numeroMeses))-1));
-        for (int i = 1;i < numeroMeses;i++) {
+        for (int i = 1;i <= numeroMeses;i++) {
             double intereses = capitalVivo * interesMensual;
             double amortizado = pagoMensual - intereses;
             capitalVivo -= amortizado;
