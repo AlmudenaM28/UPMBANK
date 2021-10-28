@@ -355,7 +355,7 @@ public class todosLosMenus {
         boolean menu = true;
         if (!volver.equals("0")) {
             while (menu) {
-                System.out.println("Cuenta de origen: " + numero + "\nPor favor ingrese el número de cuenta destinatario: ");
+                System.out.println("Cuenta de origen: " + numero + "\nPor favor introduzca el IBAN del destinatario: ");
                 String numeroDestino = scan.nextLine();
                 if (!numeroDestino.startsWith("9010")) {
                     System.out.println("Solo se pueden realizar transferencias a cuentas de UPMBank");
