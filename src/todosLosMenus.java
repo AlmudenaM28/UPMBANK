@@ -15,6 +15,10 @@ public class todosLosMenus {
     static long numCuenta = 0;
     static int DC = 0;
     static String IBAN = "";
+    static double interesDouble = 0;
+    static double prestamo = 0;
+    static int aniosPrestamo;
+    static boolean prestamoHipotecario = false;
 
     public static void menuInicial() {
         Scanner scan = new Scanner(System.in);
@@ -35,6 +39,8 @@ public class todosLosMenus {
                     \t4)Realizar extracción
                     \t5)Datos de cliente
                     \t6)Hacer transferecia  
+                    \t7)Pedir préstamo hipotecario
+                    \t8)Consultar tabla de amortización
                     \t0)Salir
 
                     """);
@@ -90,7 +96,15 @@ public class todosLosMenus {
                     System.out.println("Primero debe crear una cuenta.");
                     menuInicial();
                 }
-            } else if (opcion.equals("0")) {
+            }else if (opcion.equals("8")) {
+                if (prestamoHipotecario){
+                    tablaAmortizacion();
+                    stayMenu = false;
+                }else{
+                    System.out.println("Debe pedir primero un préstamo.");
+                }
+
+            }else if (opcion.equals("0")) {
                 stayMenu = false;
             } else {
                 System.out.println("Opción inválida");
@@ -388,12 +402,71 @@ public class todosLosMenus {
     public static void prestamoHipotecario() {
         upmBankAscii.logo();
         Scanner scan = new Scanner(System.in);
+        prestamo = 0;
+        int interes = 0;
         System.out.println("Pedir un préstamo hipotecario\nPulse ENTER para continuar o '0' para volver.");
         String volver = scan.nextLine();
         if (!volver.equals("0")) {
+            do {
+                System.out.println("Introduzca la cantidad que desea solicitar: ");
+                prestamo = scan.nextDouble();
+            }while(prestamo < 0 || prestamo == 0);
 
+            do{
+                System.out.println("Introduzca el interés anual en %: ");
+                interes = scan.nextInt();
+            }while(prestamo < 0 || prestamo > 100);
 
+            do{
+                System.out.println("Introduzca el número de años en que desea pagarlo: ");
+                aniosPrestamo = scan.nextInt();
+            }while(aniosPrestamo <= 0);
+
+            interesDouble = (double) interes/100;
+
+            System.out.printf("Préstamo de %f€ a un interés del %d%% concedido.", prestamo, interes);
+            saldo += prestamo;
+
+            transacciones += ("\nPréstamo\t[" + IBAN + "]\t" + contadorOperaciones + ".\t-" + prestamo + "€ " + "Saldo: " + saldo + "€\t" + fecha);
+
+            prestamoHipotecario = true;
+
+            System.out.println("Pulse ENTER para continuar");
+            scan.nextLine();
+            tablaAmortizacion();
+        }else{
+            menuInicial();
         }
     }
+    public static void tablaAmortizacion (){
+
+        Scanner scan = new Scanner(System.in);
+
+        System.out.printf("%8s %8s %8s %8s \n", "","PAGO MENSUAL", "INTERESES", "AMORTIZADO", "CAPITAL VIVO");
+
+        double capitalVivo = prestamo;
+        double interesMensual = interesDouble/12;
+        int numeroMeses = aniosPrestamo / 12;
+
+        double pagoMensual = capitalVivo * interesMensual * ((Math.pow(1+interesMensual,numeroMeses))/((Math.pow(1+interesMensual,numeroMeses))-1));
+
+        for (int i = 0; i <= numeroMeses; i++) {
+            if (i == 0) {
+                System.out.printf("%8d %8d %8d %8.2f", i, 0, 0, 0, capitalVivo);
+            } else {
+                double intereses = capitalVivo * interesMensual;
+                double amortizado = pagoMensual - intereses;
+                capitalVivo -= amortizado;
+                System.out.printf("%8d %8.2f %8.2f %8.2f %8.2f", i, pagoMensual, intereses, amortizado, capitalVivo);
+            }
+        }
+
+
+        System.out.println("Pulse ENTER para continuar");
+        scan.nextLine();
+        menuInicial();
+
+    }
+
 }
 
