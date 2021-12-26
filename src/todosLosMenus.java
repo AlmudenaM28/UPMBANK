@@ -1,4 +1,4 @@
-import java.time.LocalDate;
+/*import java.time.LocalDate;
 import java.util.Scanner;
 
 public class todosLosMenus {
@@ -19,8 +19,9 @@ public class todosLosMenus {
     static double prestamo = 0;
     static int aniosPrestamo;
     static boolean prestamoHipotecario = false;
+    Cliente cliente = null;
 
-    public static void menuInicial() {
+    public static void menuInicial(Cliente cliente) {
         Scanner scan = new Scanner(System.in);
         boolean stayMenu = true;
         upmBankAscii.logo();
@@ -28,13 +29,13 @@ public class todosLosMenus {
         while (stayMenu) {
             /*  Usamos una String y comprobamos que sea un número, si no lo es salta un
                 error. Esto evita que el programa se detenga al introducir texto en un nextInt() .
-             */
+
 
             System.out.print("Introduzca la operación que desea realizar:\n\t1)Darse de alta\n\t2)Crear cuenta\n\t3)Realizar depósito\n\t4)Realizar extracción\n\t5)Datos de cliente\n\t6)Hacer transferecia\n\t7)Pedir préstamo hipotecario\n\t8)Consultar tabla de amortización\n\t0)Salir\n");
             String opcion = scan.nextLine();
             if (opcion.equals("1")) {
                 stayMenu = false;
-                darseDeAlta();
+                darseDeAlta(cliente);
             } else if (opcion.equals("2")) {
                 if (dadoAlta) {
                     crearCuentaBancaria();
@@ -55,13 +56,13 @@ public class todosLosMenus {
                     stayMenu = false;
                 } else if (saldo == 0) {
                     System.out.println("Fondos insuficientes.");
-                    menuInicial();
+                    menuInicial(cliente);
                 } else {
                     System.out.println("Primero crearse una cuenta.");
                 }
             } else if (opcion.equals("5")) {
                 if (dadoAlta) {
-                    consultaDatos();
+                    consultaDatos(cliente);
                     stayMenu = false;
                 } else {
                     System.out.println("Debe darse de alta.");
@@ -72,7 +73,7 @@ public class todosLosMenus {
                     stayMenu = false;
                 } else if (saldo == 0) {
                     System.out.println("Fondos insuficientes.");
-                    menuInicial();
+                    menuInicial(cliente);
                 } else {
                     System.out.println("Primero crearse una cuenta.");
                 }
@@ -81,7 +82,7 @@ public class todosLosMenus {
                     prestamoHipotecario();
                 } else {
                     System.out.println("Primero debe crear una cuenta.");
-                    menuInicial();
+                    menuInicial(cliente);
                 }
             }else if (opcion.equals("8")) {
                 if (prestamoHipotecario){
@@ -100,25 +101,19 @@ public class todosLosMenus {
     }
 
 
-    public static void darseDeAlta() {
-
+    public static void darseDeAlta(Cliente cliente) {
         upmBankAscii.logo();
+        Fecha fechaNacimiento = null;
+        ListaCuentas listaCuentas = null;
 
-        boolean dniCorrecto = false;
-        boolean correoCorrecto = false;
-        boolean fechaCorrecta = false;
-
-        String nombre, dni = null, correo = null, primerApellido, segundoApellido, mes, dia, anio, nombreCompleto = null,
-                fechaFinal = null;
-
+        String nombre, primerApellido, segundoApellido, correo, apellidos, dni;
         Scanner scan = new Scanner(System.in);
 
         System.out.println("Darse de alta\nPulse ENTER para continuar o '0' para volver.");
         String volver = scan.nextLine();
         if (volver.equals("0")) {
-            menuInicial();
+            menuInicial(cliente);
         } else {
-
             System.out.println("Nombre: ");
             nombre = scan.nextLine();
 
@@ -128,52 +123,75 @@ public class todosLosMenus {
             System.out.println("Segundo apellido: ");
             segundoApellido = scan.nextLine();
 
-            nombreCompleto = nombre + " " + primerApellido + " " + segundoApellido;
+            apellidos = primerApellido + " " + segundoApellido;
+            dni = generarDNI(scan);
+            correo = generarCorreo(scan);
+            fechaNacimiento = generarFechaNacimiento(scan);
+            Cuenta[] cuentas = new Cuenta[10];
+            listaCuentas = new ListaCuentas(cuentas, 0);
+            cliente = new Cliente(nombre, apellidos, correo, dni, fechaNacimiento, listaCuentas);
+            menuInicial(cliente);
 
-            System.out.println("DNI: ");
-            do {
-                dni = scan.nextLine();
-                if (new validarDNI().validarNumero(dni) && new validarDNI().validarLetra(dni)) {
-                    dniCorrecto = true;
-                    //Tienen que devolver true los dos metodos de la clase validar DNI
-                } else {
-                    System.out.println("DNI incorrecto. Intente de nuevo por favor.");
-                }
-            } while (!dniCorrecto);
-
-            System.out.println("Correo electrónico: ");
-            do {
-                correo = scan.nextLine();
-                if (correo.endsWith("@alumnos.upm.es") || correo.endsWith("@upm.es")) {
-                    correoCorrecto = true;
-                } else {
-                    System.out.println("Correo incorrecto. Intente de nuevo.");
-                }
-            } while (!correoCorrecto);
-
-            System.out.println("Introduzca su fecha de nacimiento en formato dd/mm/aaaa");
-            do {
-                System.out.println("Dia: ");
-                dia = scan.nextLine();
-
-                System.out.println("Mes: ");
-                mes = scan.nextLine();
-
-                System.out.println("Año: ");
-                anio = scan.nextLine();
-
-                fechaFinal = dia + "/" + mes + "/" + anio;
-
-                if (validarFecha.validar(dia, mes, anio)) {
-                    fechaCorrecta = true;
-                    dadoAlta = true;
-                }
-
-            } while (!fechaCorrecta);
         }
+    }
 
-        datosCliente += ("\n" + nombreCompleto + "\n" + dni + "\n" + correo + "\n" + fechaFinal + "\nCuentas: \n\t");
-        menuInicial();
+    public static String generarDNI (Scanner scan){
+        boolean dniCorrecto = false;
+        String dni;
+        System.out.println("DNI: ");
+        do {
+            dni = scan.nextLine();
+            if (new validarDNI().validarNumero(dni) && new validarDNI().validarLetra(dni)) {
+                dniCorrecto = true;
+                //Tienen que devolver true los dos metodos de la clase validar DNI
+            } else {
+                System.out.println("DNI incorrecto. Intente de nuevo por favor.");
+            }
+        } while (!dniCorrecto);
+        return dni;
+    }
+
+    public static String generarCorreo(Scanner scan){
+        String correo;
+        boolean correoCorrecto = false;
+        System.out.println("Correo electrónico: ");
+        do {
+            correo = scan.nextLine();
+            if (correo.endsWith("@alumnos.upm.es") || correo.endsWith("@upm.es")) {
+                correoCorrecto = true;
+            } else {
+                System.out.println("Correo incorrecto. Intente de nuevo.");
+            }
+        } while (!correoCorrecto);
+
+        return correo;
+    }
+
+    public static Fecha generarFechaNacimiento(Scanner scan){
+        int dia, mes, anio;
+        boolean fechaCorrecta = false;
+        Fecha fechaNacimiento = null;
+        System.out.println("Introduzca su fecha de nacimiento en formato dd/mm/aaaa");
+        do {
+            System.out.println("Dia: ");
+            dia = scan.nextInt();
+
+            System.out.println("Mes: ");
+            mes = scan.nextInt();
+
+            System.out.println("Año: ");
+            anio = scan.nextInt();
+
+
+            if (Fecha.comprobarFecha(dia, mes, anio)) {
+                fechaCorrecta = true;
+                dadoAlta = true;
+                fechaNacimiento = new Fecha(dia, mes, anio);
+            }
+
+        } while (!fechaCorrecta);
+
+        return fechaNacimiento;
     }
 
     public static void crearCuentaBancaria() {
@@ -236,7 +254,7 @@ public class todosLosMenus {
             scan.nextLine();
             scan.nextLine();
         }
-        menuInicial();
+        menuInicial(cliente);
     }
 
 
@@ -264,7 +282,7 @@ public class todosLosMenus {
                             System.out.println("Pulse ENTER para continuar");
                             scan.nextLine();
                             scan.nextLine();
-                            menuInicial();
+                            menuInicial(cliente);
                         } else {
                             System.out.println("Cifra inválida, intente de nuevo.");
                         }
@@ -316,14 +334,14 @@ public class todosLosMenus {
         }
 
 
-    public static void consultaDatos() {
+    public static void consultaDatos(Cliente cliente) {
         upmBankAscii.logo();
         Scanner scan = new Scanner(System.in);
         System.out.println("Consultar datos de cliente\nPulse ENTER para continuar o '0' para volver.");
         String volver = scan.nextLine();
         boolean menu = true;
         if (!volver.equals("0")) {
-            System.out.println(datosCliente + saldo + "€");
+            cliente.imprimir();
             while (menu) {
                 System.out.println("\n1)Ver transacciones\n2)Salir");
                 String opcion = scan.nextLine();
@@ -479,3 +497,4 @@ public class todosLosMenus {
 
 }
 
+*/
