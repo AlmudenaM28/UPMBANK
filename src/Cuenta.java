@@ -10,13 +10,16 @@ public class Cuenta {
     ListaTrasferencias trasferenciasRecibidas;
     ListaTrasferencias trasferenciasEmitidas;
 
-    public Cuenta(int codigoSucursal, int digitoControl, long numeroCuenta, Cliente titular, String IBAN) {
+    public Cuenta(int codigoSucursal, int digitoControl, long numeroCuenta, Cliente titular, String IBAN, TipoCuenta tipoCuenta) {
         this.codigoSucursal = codigoSucursal;
         this.digitoControl = digitoControl;
         this.numeroCuenta = numeroCuenta;
         this.titular = titular;
         this.IBAN = IBAN;
+        this.tipoCuenta = tipoCuenta;
     }
+
+    public String getIBAN() { return IBAN; }
 
     public static int getCodigoEntidad() {
         return CODIGO_ENTIDAD;

@@ -7,21 +7,17 @@ public class ListaClientes {
         this.numClientes = numClientes;
     }
 
-    public void nuevoCliente(Cliente cliente){
-        clientes[numClientes] = cliente;
-        numClientes++;
-    }
 
     public Cliente getCliente(String dni){
         boolean clienteEncontrado = false;
         int i = 0;
         while (i < numClientes && !clienteEncontrado){
-            if (clientes[i].getDni().equals(dni)){
+            if (clientes[i].getDni().equals(dni.toUpperCase())){
                 clienteEncontrado = true;
             }
             i++;
         }
-        return (clienteEncontrado)?clientes[i]:null;
+        return (clienteEncontrado)?clientes[i-1]:null;
     }
 
     public void imprimir(){
@@ -29,6 +25,7 @@ public class ListaClientes {
             System.out.println(clientes[i].getDni() + ";" + clientes[i].getApellidos() + ";" + clientes[i].getNombre() + ";" + clientes[i].getCorreo() + ";" + clientes[i].getFechaNacimiento());
         }
     }
+
 
     public Cliente[] getClientes() {
         return clientes;

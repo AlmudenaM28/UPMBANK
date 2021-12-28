@@ -1,73 +1,93 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.Scanner;
+
+import static java.lang.Character.isLetter;
 
 public class UPMBank {
     static Cliente[] clientes = new Cliente[20];
-    static ListaClientes listaClientes = new ListaClientes(clientes, 1);
-    public static void menuInicial(Cliente cliente) {
+    static ListaClientes listaClientes = new ListaClientes(clientes, 0);
+
+    public static void menuInicial() {
         Scanner scan = new Scanner(System.in);
         boolean stayMenu = true;
         upmBankAscii.logo();
 
 
         while (stayMenu) {
-            /*  Usamos una String y comprobamos que sea un número, si no lo es salta un
-                error. Esto evita que el programa se detenga al introducir texto en un nextInt() .
-             */
-
-            System.out.print("Introduzca la operación que desea realizar:\n\t1)Darse de alta\n\t2)Crear cuenta\n\t3)Realizar depósito\n\t4)Realizar extracción\n\t5)Datos de cliente\n\t6)Hacer transferecia\n\t7)Pedir préstamo hipotecario\n\t8)Consultar tabla de amortización\n\t0)Salir\n");
-            String opcion = scan.nextLine();
-            if (opcion.equals("1")) {
-                stayMenu = false;
-                darseDeAlta(cliente);
-            } else if (opcion.equals("2")) {
-                if (true) {
-                   // crearCuentaBancaria();
+            try {
+                System.out.print("Introduzca la operación que desea realizar:\n\t1)Darse de alta\n\t2)Crear cuenta\n\t3)Realizar depósito\n\t4)Realizar extracción\n\t5)Datos de cliente\n\t6)Hacer transferecia\n\t7)Pedir préstamo hipotecario\n\t8)Consultar tabla de amortización\n\t0)Salir\n");
+                int opcion = scan.nextInt();
+                if (opcion == 1) {
                     stayMenu = false;
-                } else {
-                    System.out.println("Debe darse de alta.");
+                    darseDeAlta();
+                } else if (opcion == 2) {
+                    if (listaClientes.numClientes > 0) {
+                        System.out.println("Introduzca su DNI: ");
+                        scan.nextLine();
+                        String dni = scan.nextLine();
+                        Cliente clienteBuscado = listaClientes.getCliente(dni);
+                        if (clienteBuscado != null) {
+                            if (clienteBuscado.getCuentas().numCuentas < 10) {
+                                crearCuenta(clienteBuscado);
+                                stayMenu = false;
+                            } else {
+                                System.out.println("No puedes crear más cuentas.");
+                            }
+                        } else {
+                            System.out.println("Cliente no encontrado");
+                        }
+                        stayMenu = false;
+                    } else {
+                        System.out.println("Debe darse de alta.");
+                    }
+                } else if (opcion == 3) {
+                    if (true) {
+                        //realizarDeposito();
+                        stayMenu = false;
+                    } else {
+                        System.out.println("Primero debe crear una cuenta");
+                    }
+                } else if (opcion == 4) {
+                    if (true) {
+                        //realizarExtraccion();
+                        stayMenu = false;
+                    } else if (true) {
+                        System.out.println("Fondos insuficientes.");
+                        //menuInicial(cliente);
+                    } else {
+                        System.out.println("Primero crearse una cuenta.");
+                    }
+                } else if (opcion == 5) {
+                    System.out.println("Introduzca su DNI: ");
+                    scan.nextLine();
+                    String dni = scan.nextLine();
+                    Cliente clienteBuscado = listaClientes.getCliente(dni);
+                    if (clienteBuscado != null) {
+                        consultaDatos(listaClientes.getCliente(dni));
+                        stayMenu = false;
+                    } else {
+                        System.out.println("Cliente no encontrado");
+                    }
                 }
-            } else if (opcion.equals("3")) {
-                if (true) {
-                    //realizarDeposito();
-                    stayMenu = false;
-                } else {
-                    System.out.println("Primero debe crear una cuenta");
-                }
-            } else if (opcion.equals("4")) {
-                if (true) {
-                    //realizarExtraccion();
-                    stayMenu = false;
-                } else if (true) {
-                    System.out.println("Fondos insuficientes.");
-                    menuInicial(cliente);
-                } else {
-                    System.out.println("Primero crearse una cuenta.");
-                }
-            } else if (opcion.equals("5")) {
-                if (true) {
-                    consultaDatos(cliente);
-                    stayMenu = false;
-                } else {
-                    System.out.println("Debe darse de alta.");
-                }
+            } catch (Exception e) {
+                System.out.println("Opción inválida.");
+                scan.nextLine();
             }
         }
     }
 
 
-    public static void darseDeAlta(Cliente cliente) {
+    public static void darseDeAlta() {
         upmBankAscii.logo();
         Fecha fechaNacimiento;
-        ListaCuentas listaCuentas;
 
         String nombre, primerApellido, segundoApellido, correo, apellidos, dni;
         Scanner scan = new Scanner(System.in);
 
         System.out.println("Darse de alta\nPulse ENTER para continuar o '0' para volver.");
         String volver = scan.nextLine();
-        if (volver.equals("0")) {
-            menuInicial(cliente);
-        } else {
+        if (!volver.equals("0")) {
             System.out.println("Nombre: ");
             nombre = scan.nextLine();
 
@@ -82,11 +102,61 @@ public class UPMBank {
             correo = generarCorreo(scan);
             fechaNacimiento = generarFechaNacimiento(scan);
             Cuenta[] cuentas = new Cuenta[10];
-            listaCuentas = new ListaCuentas(cuentas, 0);
-            cliente = new Cliente(nombre, apellidos, correo, dni, fechaNacimiento, listaCuentas);
-            listaClientes.nuevoCliente(cliente);
-            menuInicial(cliente);
+            ListaCuentas listaCuentas = new ListaCuentas(cuentas, 0);
+            listaClientes.getClientes()[listaClientes.numClientes] = (new Cliente(nombre, apellidos, correo, dni, fechaNacimiento, listaCuentas));
+            listaClientes.numClientes++;
         }
+        menuInicial();
+    }
+
+    public static void crearCuenta(Cliente cliente) throws Exception {
+        Scanner scan = new Scanner(System.in);
+        upmBankAscii.logo();
+        System.out.println("Crear cuenta\nPulse ENTER para continuar o '0' para volver.");
+        String volver = scan.nextLine();
+        if (!volver.equals("0")) {
+            TipoCuenta tipoCuenta = new TipoCuenta(TipoCuenta.tipoCuenta());
+            long numeroCuenta = NC.obtenerNC();
+            int codigoSucursal = codigoSucursal();
+            int codigoEntidad = 9010;
+            int DC = digitoControl.obtenerDC(numeroCuenta, codigoSucursal, codigoEntidad);
+            String IBAN = (Integer.toString(codigoEntidad) + 0 + codigoSucursal + DC + numeroCuenta);
+            cliente.getCuentas().getListaCuentas()[cliente.getCuentas().numCuentas] = new Cuenta(codigoSucursal, DC, numeroCuenta, cliente, IBAN, tipoCuenta);
+            cliente.getCuentas().numCuentas++;
+        }
+        menuInicial();
+    }
+
+    public static int codigoSucursal() throws Exception {
+        upmBankAscii.logo();
+        boolean menuActivo = true;
+        Scanner scan = new Scanner(System.in);
+        BufferedReader lector = new BufferedReader(new FileReader("sucursales.txt"));
+        String linea = lector.readLine();
+        int[] codigos = new int[4];
+        int cs = 0;
+        for (int i = 0; i < 4; i++) {
+            codigos[i] = Integer.parseInt(linea.split("=")[1]);
+            linea = lector.readLine();
+        }
+        int opcion;
+        while (menuActivo) {
+            try {
+                System.out.println("Elija su campus: \n1. Campus sur\n2. Campus Ciudad Universitaria\n3. Campus Madrid Ciudad\n4. Campus Montegancedo");
+                opcion = scan.nextInt();
+                if (opcion >= 1 && opcion <= 4) {
+                    cs = codigos[opcion - 1];
+                    menuActivo = false;
+                } else {
+                    System.out.println("Input inválido");
+                }
+            } catch (Exception e) {
+                System.out.println("Input inválido");
+                scan.nextLine();
+            }
+        }
+
+        return cs;
     }
 
     public static void consultaDatos(Cliente cliente) {
@@ -97,6 +167,14 @@ public class UPMBank {
         boolean menu = true;
         if (!volver.equals("0")) {
             cliente.imprimir();
+            System.out.println("Cuentas bancarias: ");
+            try {
+                for (int i = 0; i < cliente.getCuentas().numCuentas; i++) {
+                    System.out.println("\t" + cliente.getCuentas().getListaCuentas()[i].getIBAN() + " " + cliente.getCuentas().getListaCuentas()[i].tipoCuenta.tipoCuenta + "\n");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             while (menu) {
                 System.out.println("\n1)Ver transacciones\n2)Salir");
                 String opcion = scan.nextLine();
@@ -106,18 +184,20 @@ public class UPMBank {
                     scan.nextLine();
                     scan.nextLine();
                     menu = false;
-                    menuInicial(cliente);
+                    menuInicial();
                 } else if (opcion.equals("2")) {
                     menu = false;
-                    menuInicial(cliente);
+                    menuInicial();
                 } else {
                     System.out.println("Opción inválida");
                 }
             }
+        } else {
+            menuInicial();
         }
     }
 
-    public static String generarDNI (Scanner scan){
+    public static String generarDNI(Scanner scan) {
         boolean dniCorrecto = false;
         String dni;
         System.out.println("DNI: ");
@@ -133,23 +213,42 @@ public class UPMBank {
         return dni;
     }
 
-    public static String generarCorreo(Scanner scan){
-        String correo;
+    public static boolean correoCorrecto(String correo) {
+
+        boolean terminacionCorrecta;
+        boolean numeroCamposCorrecto;
+        boolean digitoLetraCorrecto = true;
+        boolean longitudCorrecta;
+        String[] correoAlfaNumerico = correo.split("@");
+
+        terminacionCorrecta = correo.endsWith("@alumnos.upm.es") || correo.endsWith("@upm.es");
+        longitudCorrecta = correoAlfaNumerico[0].length() > 0;
+        numeroCamposCorrecto = correoAlfaNumerico.length == 2;
+
+
+        int i = 0;
+        while (i < correoAlfaNumerico[0].length() && digitoLetraCorrecto) {
+            digitoLetraCorrecto = Character.isLetter(correoAlfaNumerico[0].charAt(i)) || Character.isDigit(correoAlfaNumerico[0].charAt(i));
+            i++;
+        }
+
+        return (terminacionCorrecta && numeroCamposCorrecto && digitoLetraCorrecto && longitudCorrecta);
+    }
+
+    public static String generarCorreo(Scanner scan) {
         boolean correoCorrecto = false;
-        System.out.println("Correo electrónico: ");
+        String correo = "";
         do {
+            System.out.println("Correo electrónico: ");
             correo = scan.nextLine();
-            if (correo.endsWith("@alumnos.upm.es") || correo.endsWith("@upm.es")) {
-                correoCorrecto = true;
-            } else {
-                System.out.println("Correo incorrecto. Intente de nuevo.");
-            }
+            correoCorrecto = correoCorrecto(correo);
+
         } while (!correoCorrecto);
 
         return correo;
     }
 
-    public static Fecha generarFechaNacimiento(Scanner scan){
+    public static Fecha generarFechaNacimiento(Scanner scan) {
         int dia, mes, anio;
         boolean fechaCorrecta = false;
         Fecha fechaNacimiento = null;

@@ -7,7 +7,7 @@ public class ListaCuentas {
         this.numCuentas = numCuentas;
     }
 
-    public Cuenta[] getCuentas() {
+    public Cuenta[] getListaCuentas() {
         return cuentas;
     }
 
