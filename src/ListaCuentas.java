@@ -7,6 +7,12 @@ public class ListaCuentas {
         this.numCuentas = numCuentas;
     }
 
+    public void imprimir() {
+        for (int i = 0; i < numCuentas; i++) {
+            System.out.println("\t" + (i + 1) + ". " + cuentas[i].getIBAN() + " " + cuentas[i].tipoCuenta + "  " + cuentas[i].saldo + "€");
+        }
+    }
+
     public Cuenta[] getListaCuentas() {
         return cuentas;
     }

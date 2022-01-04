@@ -1,25 +1,48 @@
+import java.util.Scanner;
+
+enum TipoCuenta{
+    Corriente, Ahorro, Remunerada;
+}
+
+
 public class Cuenta {
     final static int CODIGO_ENTIDAD = 9010;
-    int codigoSucursal, digitoControl;
-    long numeroCuenta;
-    String IBAN;
+    private int codigoSucursal, digitoControl;
+    private long numeroCuenta;
+    private String IBAN;
     TipoCuenta tipoCuenta;
-    Cliente titular;
-    ListaMovimientos movimientos;
-    ListaPrestamos prestamos;
-    ListaTrasferencias trasferenciasRecibidas;
-    ListaTrasferencias trasferenciasEmitidas;
+    private Cliente titular;
+    private ListaMovimientos movimientos;
+    private ListaPrestamos prestamos;
+    private ListaTrasferencias trasferenciasRecibidas;
+    private ListaTrasferencias trasferenciasEmitidas;
+    double saldo = 0;
 
-    public Cuenta(int codigoSucursal, int digitoControl, long numeroCuenta, Cliente titular, String IBAN, TipoCuenta tipoCuenta) {
+    public Cuenta(int codigoSucursal, int digitoControl, long numeroCuenta, Cliente titular, String IBAN, TipoCuenta tipoCuenta, ListaMovimientos listaMovimientos) {
         this.codigoSucursal = codigoSucursal;
         this.digitoControl = digitoControl;
         this.numeroCuenta = numeroCuenta;
         this.titular = titular;
         this.IBAN = IBAN;
         this.tipoCuenta = tipoCuenta;
+        this.movimientos = listaMovimientos;
     }
 
+    public void imprimir(){
+        System.out.println(titular.getNombre());
+        System.out.println(titular.getApellidos());
+        System.out.println(titular.getDni());
+        System.out.println(this.IBAN);
+        System.out.println("Saldo: " + saldo + "€");
+    }
+
+
+
     public String getIBAN() { return IBAN; }
+
+    public double getSaldo() {
+        return saldo;
+    }
 
     public static int getCodigoEntidad() {
         return CODIGO_ENTIDAD;
@@ -53,8 +76,27 @@ public class Cuenta {
         return tipoCuenta;
     }
 
-    public void setTipoCuenta(TipoCuenta tipoCuenta) {
-        this.tipoCuenta = tipoCuenta;
+    public static TipoCuenta setTipoCuenta() {
+        boolean menuOpcion = true;
+        Scanner scan = new Scanner(System.in);
+        TipoCuenta tipoCuenta = null;
+        while (menuOpcion) {
+            System.out.println("Elija su tipo de cuenta: \n1) Corriente\n2) Ahorro\n3) Remunerada");
+            String opcion = scan.nextLine();
+            if (opcion.equals("1")) {
+                menuOpcion = false;
+                tipoCuenta = TipoCuenta.Corriente;
+            } else if (opcion.equals("2")) {
+                menuOpcion = false;
+                tipoCuenta = TipoCuenta.Ahorro;
+            } else if (opcion.equals("3")) {
+                menuOpcion = false;
+                tipoCuenta = TipoCuenta.Remunerada;
+            } else {
+                System.out.println("Opción inválida");
+            }
+        }
+        return tipoCuenta;
     }
 
     public Cliente getTitular() {

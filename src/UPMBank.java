@@ -2,7 +2,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.Scanner;
 
-import static java.lang.Character.isLetter;
 
 public class UPMBank {
     static Cliente[] clientes = new Cliente[20];
@@ -33,20 +32,37 @@ public class UPMBank {
                                 stayMenu = false;
                             } else {
                                 System.out.println("No puedes crear más cuentas.");
+                                menuInicial();
                             }
                         } else {
                             System.out.println("Cliente no encontrado");
+                            menuInicial();
                         }
                         stayMenu = false;
                     } else {
                         System.out.println("Debe darse de alta.");
                     }
                 } else if (opcion == 3) {
-                    if (true) {
-                        //realizarDeposito();
+                    if (listaClientes.numClientes > 0) {
+                        System.out.println("Introduzca su DNI: ");
+                        scan.nextLine();
+                        String dni = scan.nextLine();
+                        Cliente clienteBuscado = listaClientes.getCliente(dni);
+                        if (clienteBuscado != null) {
+                            if (clienteBuscado.getCuentas().numCuentas > 0) {
+                                realizarDeposito(clienteBuscado);
+                            }else{
+                                System.out.println("Debe crear una cuenta primero");
+                                menuInicial();
+                            }
+                        } else {
+                            System.out.println("Cliente no encontrado");
+                            menuInicial();
+                        }
                         stayMenu = false;
                     } else {
-                        System.out.println("Primero debe crear una cuenta");
+                        System.out.println("Debe darse de alta.");
+                        menuInicial();
                     }
                 } else if (opcion == 4) {
                     if (true) {
@@ -81,7 +97,7 @@ public class UPMBank {
     public static void darseDeAlta() {
         upmBankAscii.logo();
         Fecha fechaNacimiento;
-
+        boolean dniRepetido = false;
         String nombre, primerApellido, segundoApellido, correo, apellidos, dni;
         Scanner scan = new Scanner(System.in);
 
@@ -101,10 +117,27 @@ public class UPMBank {
             dni = generarDNI(scan);
             correo = generarCorreo(scan);
             fechaNacimiento = generarFechaNacimiento(scan);
-            Cuenta[] cuentas = new Cuenta[10];
-            ListaCuentas listaCuentas = new ListaCuentas(cuentas, 0);
-            listaClientes.getClientes()[listaClientes.numClientes] = (new Cliente(nombre, apellidos, correo, dni, fechaNacimiento, listaCuentas));
-            listaClientes.numClientes++;
+            int i = 0;
+            try {
+                while (i < listaClientes.getClientes().length && !dniRepetido) {
+                    if (listaClientes.getClientes()[i].getDni().equals(dni)) {
+                        dniRepetido = true;
+                    }
+                    i++;
+                }
+            }catch (Exception ignored){}
+
+            if (!dniRepetido) {
+                Cuenta[] cuentas = new Cuenta[10];
+                ListaCuentas listaCuentas = new ListaCuentas(cuentas, 0);
+                listaClientes.getClientes()[listaClientes.numClientes] = (new Cliente(nombre, apellidos, correo, dni, fechaNacimiento, listaCuentas));
+                listaClientes.numClientes++;
+            }else{
+                System.out.println("\nYa existe un cliente con el DNI " + dni);
+                System.out.println("Pulse ENTER para continuar o '0' para volver.");
+                scan.nextLine();
+                scan.nextLine();
+            }
         }
         menuInicial();
     }
@@ -115,17 +148,89 @@ public class UPMBank {
         System.out.println("Crear cuenta\nPulse ENTER para continuar o '0' para volver.");
         String volver = scan.nextLine();
         if (!volver.equals("0")) {
-            TipoCuenta tipoCuenta = new TipoCuenta(TipoCuenta.tipoCuenta());
+            TipoCuenta tipoCuenta = Cuenta.setTipoCuenta();
             long numeroCuenta = NC.obtenerNC();
-            int codigoSucursal = codigoSucursal();
+            int codigoSucursal = Main.CS;
             int codigoEntidad = 9010;
             int DC = digitoControl.obtenerDC(numeroCuenta, codigoSucursal, codigoEntidad);
             String IBAN = (Integer.toString(codigoEntidad) + 0 + codigoSucursal + DC + numeroCuenta);
-            cliente.getCuentas().getListaCuentas()[cliente.getCuentas().numCuentas] = new Cuenta(codigoSucursal, DC, numeroCuenta, cliente, IBAN, tipoCuenta);
+            ListaMovimientos movimientos = new ListaMovimientos();
+            cliente.getCuentas().getListaCuentas()[cliente.getCuentas().numCuentas] = new Cuenta(codigoSucursal, DC, numeroCuenta, cliente, IBAN, tipoCuenta, movimientos);
             cliente.getCuentas().numCuentas++;
         }
         menuInicial();
     }
+
+    public static void realizarDeposito(Cliente cliente) {
+        upmBankAscii.logo();
+        Scanner scan = new Scanner(System.in);
+        System.out.println("Realizar depósito\nPulse ENTER para continuar o '0' para volver.");
+        String volver = scan.nextLine();
+        int cuentaElegida = 0;
+        boolean menuPrincipal = true;
+        if (volver.equals("0")) {
+            menuInicial();
+        } else {
+            boolean menuDeposito = true;
+            while (menuDeposito){
+                try {
+                    System.out.println("Escoja la cuenta a la que desea realizar el depósito: ");
+                    cliente.getCuentas().imprimir();
+                    cuentaElegida = scan.nextInt() - 1;
+                    boolean cifraCorrecta = false;
+                    while (!cifraCorrecta) {
+                        System.out.println("Escriba la cantidad que desea depositar: ");
+                        double ingreso = scan.nextDouble();
+                        if (ingreso > 0){
+                            System.out.println("Ingreso realizado correctamente.");
+                            cliente.getCuentas().cuentas[cuentaElegida].getMovimientos().anadirMovimiento(new Movimiento(ingreso, TipoMovimiento.Ingreso));
+                            cliente.getCuentas().cuentas[cuentaElegida].saldo += ingreso;
+                            menuInicial();
+                        }
+                    }
+                }catch(Exception e){
+                    System.out.println("Número inválido. Intente de nuevo.");
+                }
+            }
+        }
+    }
+
+    public static void realizarExtraccion(Cliente cliente) {
+        upmBankAscii.logo();
+        Scanner scan = new Scanner(System.in);
+        System.out.println("Realizar depósito\nPulse ENTER para continuar o '0' para volver.");
+        String volver = scan.nextLine();
+        int cuentaElegida = 0;
+        boolean menuPrincipal = true;
+        if (volver.equals("0")) {
+            menuInicial();
+        } else {
+            boolean menuDeposito = true;
+            while (menuDeposito){
+                try {
+                    System.out.println("Escoja la cuenta a la que desea realizar el depósito: ");
+                    cliente.getCuentas().imprimir();
+                    cuentaElegida = scan.nextInt() - 1;
+                    boolean cifraCorrecta = false;
+                    while (!cifraCorrecta) {
+                        System.out.println("Escriba la cantidad que desea depositar: ");
+                        double ingreso = scan.nextDouble();
+                        if (ingreso > 0){
+                            System.out.println("Ingreso realizado correctamente.");
+                            cliente.getCuentas().cuentas[cuentaElegida].getMovimientos().anadirMovimiento(new Movimiento(ingreso, TipoMovimiento.Ingreso));
+                            cliente.getCuentas().cuentas[cuentaElegida].saldo += ingreso;
+                        }
+                    }
+                }catch(Exception e){
+                    System.out.println("Número inválido. Intente de nuevo.");
+                }
+            }
+        }
+    }
+
+
+
+
 
     public static int codigoSucursal() throws Exception {
         upmBankAscii.logo();
@@ -142,7 +247,7 @@ public class UPMBank {
         int opcion;
         while (menuActivo) {
             try {
-                System.out.println("Elija su campus: \n1. Campus sur\n2. Campus Ciudad Universitaria\n3. Campus Madrid Ciudad\n4. Campus Montegancedo");
+                System.out.println("Elija el campus en el que se encuentre: \n1. Campus sur\n2. Campus Ciudad Universitaria\n3. Campus Madrid Ciudad\n4. Campus Montegancedo");
                 opcion = scan.nextInt();
                 if (opcion >= 1 && opcion <= 4) {
                     cs = codigos[opcion - 1];
@@ -170,7 +275,7 @@ public class UPMBank {
             System.out.println("Cuentas bancarias: ");
             try {
                 for (int i = 0; i < cliente.getCuentas().numCuentas; i++) {
-                    System.out.println("\t" + cliente.getCuentas().getListaCuentas()[i].getIBAN() + " " + cliente.getCuentas().getListaCuentas()[i].tipoCuenta.tipoCuenta + "\n");
+                    System.out.println("\t" + cliente.getCuentas().getListaCuentas()[i].getIBAN() + " " + cliente.getCuentas().getListaCuentas()[i].tipoCuenta + "  " + cliente.getCuentas().getListaCuentas()[i].saldo + "" );
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -205,7 +310,6 @@ public class UPMBank {
             dni = scan.nextLine();
             if (new validarDNI().validarNumero(dni) && new validarDNI().validarLetra(dni)) {
                 dniCorrecto = true;
-                //Tienen que devolver true los dos metodos de la clase validar DNI
             } else {
                 System.out.println("DNI incorrecto. Intente de nuevo por favor.");
             }
