@@ -12,8 +12,8 @@ public class Movimiento {
         this.tipoMovimiento = tipoMovimiento;
     }
 
-    public void imprimir(){
-        System.out.println(tipoMovimiento + " de " + importe + "€");
+    public void imprimir(Cuenta cuenta){
+        System.out.println(cuenta.getIBAN() + " " + tipoMovimiento + " de " + importe + "€");
     }
 
 }

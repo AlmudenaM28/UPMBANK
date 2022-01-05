@@ -1,5 +1,5 @@
 public class ListaCuentas {
-    Cuenta[] cuentas;
+    private Cuenta[] cuentas;
     int numCuentas;
 
     public ListaCuentas(Cuenta[] cuentas, int numCuentas) {

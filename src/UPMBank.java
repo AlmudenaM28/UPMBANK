@@ -32,15 +32,20 @@ public class UPMBank {
                                 stayMenu = false;
                             } else {
                                 System.out.println("No puedes crear más cuentas.");
-                                menuInicial();
+                                System.out.println("Pulse ENTER para continuar.");
+                                scan.nextLine();
+                                scan.nextLine();
                             }
                         } else {
                             System.out.println("Cliente no encontrado");
-                            menuInicial();
+                            System.out.println("Pulse ENTER para continuar.");
+                            scan.nextLine();
                         }
-                        stayMenu = false;
                     } else {
                         System.out.println("Debe darse de alta.");
+                        System.out.println("Pulse ENTER para continuar.");
+                        scan.nextLine();
+                        scan.nextLine();
                     }
                 } else if (opcion == 3) {
                     if (listaClientes.numClientes > 0) {
@@ -53,26 +58,50 @@ public class UPMBank {
                                 realizarDeposito(clienteBuscado);
                             }else{
                                 System.out.println("Debe crear una cuenta primero");
-                                menuInicial();
+                                System.out.println("Pulse ENTER para continuar.");
+                                scan.nextLine();
+                                scan.nextLine();
                             }
                         } else {
                             System.out.println("Cliente no encontrado");
-                            menuInicial();
+                            System.out.println("Pulse ENTER para continuar.");
+                            scan.nextLine();
+                            scan.nextLine();
                         }
                         stayMenu = false;
                     } else {
                         System.out.println("Debe darse de alta.");
-                        menuInicial();
+                        System.out.println("Pulse ENTER para continuar.");
+                        scan.nextLine();
+                        scan.nextLine();
                     }
                 } else if (opcion == 4) {
-                    if (true) {
-                        //realizarExtraccion();
+                    if (listaClientes.numClientes > 0) {
+                        System.out.println("Introduzca su DNI: ");
+                        scan.nextLine();
+                        String dni = scan.nextLine();
+                        Cliente clienteBuscado = listaClientes.getCliente(dni);
+                        if (clienteBuscado != null) {
+                            if (clienteBuscado.getCuentas().numCuentas > 0) {
+                                realizarExtraccion(clienteBuscado);
+                            }else{
+                                System.out.println("Debe crear una cuenta primero");
+                                System.out.println("Pulse ENTER para continuar.");
+                                scan.nextLine();
+                                scan.nextLine();
+                            }
+                        } else {
+                            System.out.println("Cliente no encontrado");
+                            System.out.println("Pulse ENTER para continuar.");
+                            scan.nextLine();
+                            scan.nextLine();
+                        }
                         stayMenu = false;
-                    } else if (true) {
-                        System.out.println("Fondos insuficientes.");
-                        //menuInicial(cliente);
                     } else {
-                        System.out.println("Primero crearse una cuenta.");
+                        System.out.println("Debe darse de alta.");
+                        System.out.println("Pulse ENTER para continuar.");
+                        scan.nextLine();
+                        scan.nextLine();
                     }
                 } else if (opcion == 5) {
                     System.out.println("Introduzca su DNI: ");
@@ -84,7 +113,11 @@ public class UPMBank {
                         stayMenu = false;
                     } else {
                         System.out.println("Cliente no encontrado");
+                        System.out.println("Pulse ENTER para continuar.");
+                        scan.nextLine();
                     }
+                }else if (opcion == 0){
+                    stayMenu = false;
                 }
             } catch (Exception e) {
                 System.out.println("Opción inválida.");
@@ -120,7 +153,7 @@ public class UPMBank {
             int i = 0;
             try {
                 while (i < listaClientes.getClientes().length && !dniRepetido) {
-                    if (listaClientes.getClientes()[i].getDni().equals(dni)) {
+                    if (listaClientes.getClientes()[i].getDni().equals(dni.toUpperCase())) {
                         dniRepetido = true;
                     }
                     i++;
@@ -130,15 +163,20 @@ public class UPMBank {
             if (!dniRepetido) {
                 Cuenta[] cuentas = new Cuenta[10];
                 ListaCuentas listaCuentas = new ListaCuentas(cuentas, 0);
-                listaClientes.getClientes()[listaClientes.numClientes] = (new Cliente(nombre, apellidos, correo, dni, fechaNacimiento, listaCuentas));
+                listaClientes.getClientes()[listaClientes.numClientes] = (new Cliente(nombre, apellidos, correo, dni.toUpperCase(), fechaNacimiento, listaCuentas));
                 listaClientes.numClientes++;
             }else{
-                System.out.println("\nYa existe un cliente con el DNI " + dni);
-                System.out.println("Pulse ENTER para continuar o '0' para volver.");
+                System.out.println("\nYa existe un cliente con el DNI " + dni.toUpperCase());
+                System.out.println("Pulse ENTER para continuar.");
                 scan.nextLine();
                 scan.nextLine();
+                menuInicial();
             }
         }
+        System.out.println("Cliente creado correctamente.");
+        System.out.println("Pulse ENTER para continuar.");
+        scan.nextLine();
+        scan.nextLine();
         menuInicial();
     }
 
@@ -154,10 +192,14 @@ public class UPMBank {
             int codigoEntidad = 9010;
             int DC = digitoControl.obtenerDC(numeroCuenta, codigoSucursal, codigoEntidad);
             String IBAN = (Integer.toString(codigoEntidad) + 0 + codigoSucursal + DC + numeroCuenta);
-            ListaMovimientos movimientos = new ListaMovimientos();
-            cliente.getCuentas().getListaCuentas()[cliente.getCuentas().numCuentas] = new Cuenta(codigoSucursal, DC, numeroCuenta, cliente, IBAN, tipoCuenta, movimientos);
+            Movimiento[] movimientos =  new Movimiento[50];
+            ListaMovimientos listaMovimientos = new ListaMovimientos(movimientos);
+            cliente.getCuentas().getListaCuentas()[cliente.getCuentas().numCuentas] = new Cuenta(codigoSucursal, DC, numeroCuenta, cliente, IBAN, tipoCuenta, listaMovimientos);
             cliente.getCuentas().numCuentas++;
         }
+        System.out.println("Cuenta creada correctamente");
+        System.out.println("Pulse ENTER para continuar.");
+        scan.nextLine();
         menuInicial();
     }
 
@@ -183,9 +225,14 @@ public class UPMBank {
                         double ingreso = scan.nextDouble();
                         if (ingreso > 0){
                             System.out.println("Ingreso realizado correctamente.");
-                            cliente.getCuentas().cuentas[cuentaElegida].getMovimientos().anadirMovimiento(new Movimiento(ingreso, TipoMovimiento.Ingreso));
-                            cliente.getCuentas().cuentas[cuentaElegida].saldo += ingreso;
+                            cliente.getCuentas().getListaCuentas()[cuentaElegida].getMovimientos().anadirMovimiento(new Movimiento(ingreso, TipoMovimiento.Ingreso));
+                            cliente.getCuentas().getListaCuentas()[cuentaElegida].saldo += ingreso;
+                            System.out.println("Pulse ENTER para continuar o '0' para volver.");
+                            scan.nextLine();
+                            scan.nextLine();
                             menuInicial();
+                        }else{
+                            System.out.println("Número inválido");
                         }
                     }
                 }catch(Exception e){
@@ -198,7 +245,7 @@ public class UPMBank {
     public static void realizarExtraccion(Cliente cliente) {
         upmBankAscii.logo();
         Scanner scan = new Scanner(System.in);
-        System.out.println("Realizar depósito\nPulse ENTER para continuar o '0' para volver.");
+        System.out.println("Realizar extracción\nPulse ENTER para continuar o '0' para volver.");
         String volver = scan.nextLine();
         int cuentaElegida = 0;
         boolean menuPrincipal = true;
@@ -208,17 +255,23 @@ public class UPMBank {
             boolean menuDeposito = true;
             while (menuDeposito){
                 try {
-                    System.out.println("Escoja la cuenta a la que desea realizar el depósito: ");
+                    System.out.println("Escoja la cuenta a la que desea realizar la extracción: ");
                     cliente.getCuentas().imprimir();
                     cuentaElegida = scan.nextInt() - 1;
                     boolean cifraCorrecta = false;
                     while (!cifraCorrecta) {
-                        System.out.println("Escriba la cantidad que desea depositar: ");
-                        double ingreso = scan.nextDouble();
-                        if (ingreso > 0){
-                            System.out.println("Ingreso realizado correctamente.");
-                            cliente.getCuentas().cuentas[cuentaElegida].getMovimientos().anadirMovimiento(new Movimiento(ingreso, TipoMovimiento.Ingreso));
-                            cliente.getCuentas().cuentas[cuentaElegida].saldo += ingreso;
+                        System.out.println("Escriba la cantidad que desea extraer: ");
+                        double extraccion = scan.nextDouble();
+                        if (extraccion <= cliente.getCuentas().getListaCuentas()[cuentaElegida].saldo && extraccion > 0){
+                            System.out.println("Extracción realizada correctamente.");
+                            cliente.getCuentas().getListaCuentas()[cuentaElegida].getMovimientos().anadirMovimiento(new Movimiento(extraccion, TipoMovimiento.Extracción));
+                            cliente.getCuentas().getListaCuentas()[cuentaElegida].saldo -= extraccion;
+                            System.out.println("Pulse ENTER para continuar o '0' para volver.");
+                            scan.nextLine();
+                            scan.nextLine();
+                            menuInicial();
+                        }else{
+                            System.out.println("¡No tienes suficiente dinero en la cuenta!");
                         }
                     }
                 }catch(Exception e){
@@ -275,7 +328,7 @@ public class UPMBank {
             System.out.println("Cuentas bancarias: ");
             try {
                 for (int i = 0; i < cliente.getCuentas().numCuentas; i++) {
-                    System.out.println("\t" + cliente.getCuentas().getListaCuentas()[i].getIBAN() + " " + cliente.getCuentas().getListaCuentas()[i].tipoCuenta + "  " + cliente.getCuentas().getListaCuentas()[i].saldo + "" );
+                    System.out.println("\t" + cliente.getCuentas().getListaCuentas()[i].getIBAN() + " " + cliente.getCuentas().getListaCuentas()[i].tipoCuenta + "  " + cliente.getCuentas().getListaCuentas()[i].saldo + "€" );
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -284,9 +337,10 @@ public class UPMBank {
                 System.out.println("\n1)Ver transacciones\n2)Salir");
                 String opcion = scan.nextLine();
                 if (opcion.equals("1")) {
-                    //System.out.println(transacciones);
+                    for (int i = 0; i < cliente.getCuentas().numCuentas; i++) {
+                        cliente.getCuentas().getListaCuentas()[i].getMovimientos().imprimir(cliente.getCuentas().getListaCuentas()[i]);
+                    }
                     System.out.println("\n Pulse ENTER para continuar");
-                    scan.nextLine();
                     scan.nextLine();
                     menu = false;
                     menuInicial();
