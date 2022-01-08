@@ -2,9 +2,9 @@ public class ListaCuentas {
     private Cuenta[] cuentas;
     int numCuentas;
 
-    public ListaCuentas(Cuenta[] cuentas, int numCuentas) {
+    public ListaCuentas(Cuenta[] cuentas) {
         this.cuentas = cuentas;
-        this.numCuentas = numCuentas;
+        this.numCuentas = 0;
     }
 
     public void imprimir() {

@@ -18,7 +18,8 @@ public class Cuenta {
     private ListaTrasferencias trasferenciasEmitidas;
     double saldo = 0;
 
-    public Cuenta(int codigoSucursal, int digitoControl, long numeroCuenta, Cliente titular, String IBAN, TipoCuenta tipoCuenta, ListaMovimientos listaMovimientos) {
+    public Cuenta(int codigoSucursal, int digitoControl, long numeroCuenta, Cliente titular, String IBAN, TipoCuenta tipoCuenta, ListaMovimientos listaMovimientos,
+                  ListaPrestamos listaPrestamos, ListaTrasferencias listaTrasferenciasEmitidas, ListaTrasferencias listaTrasferenciasRecibidas) {
         this.codigoSucursal = codigoSucursal;
         this.digitoControl = digitoControl;
         this.numeroCuenta = numeroCuenta;
@@ -26,6 +27,9 @@ public class Cuenta {
         this.IBAN = IBAN;
         this.tipoCuenta = tipoCuenta;
         this.movimientos = listaMovimientos;
+        this.prestamos = listaPrestamos;
+        this.trasferenciasEmitidas = listaTrasferenciasEmitidas;
+        this.trasferenciasRecibidas = listaTrasferenciasRecibidas;
     }
 
     public void imprimir(){
@@ -123,15 +127,15 @@ public class Cuenta {
         this.prestamos = prestamos;
     }
 
-    public ListaTrasferencias getTrasferenciasRecibidas() {
+    public ListaTrasferencias getTransferenciasRecibidas() {
         return trasferenciasRecibidas;
     }
 
-    public void setTrasferenciasRecibidas(ListaTrasferencias trasferenciasRecibidas) {
+    public void setTransferenciasRecibidas(ListaTrasferencias trasferenciasRecibidas) {
         this.trasferenciasRecibidas = trasferenciasRecibidas;
     }
 
-    public ListaTrasferencias getTrasferenciasEmitidas() {
+    public ListaTrasferencias getTransferenciasEmitidas() {
         return trasferenciasEmitidas;
     }
 
