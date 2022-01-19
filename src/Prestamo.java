@@ -12,18 +12,6 @@ public class Prestamo {
     }
 
 
-    public double getImporte() {
-        return importe;
-    }
-
-    public int getAnios() {
-        return anios;
-    }
-
-    public double getInteresMensual() {
-        return interesMensual;
-    }
-
     public void imprimir(Cuenta cuenta){
         System.out.println(cuenta.getIBAN() + " Préstamo hipotecario de " + importe + "€ con un interés del " + interesMensual*100 + "% durante " + anios + " años." );
     }

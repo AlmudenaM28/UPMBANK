@@ -17,15 +17,4 @@ public class ListaCuentas {
         return cuentas;
     }
 
-    public void setCuentas(Cuenta[] cuentas) {
-        this.cuentas = cuentas;
-    }
-
-    public int getNumCuentas() {
-        return numCuentas;
-    }
-
-    public void setNumCuentas(int numCuentas) {
-        this.numCuentas = numCuentas;
-    }
 }

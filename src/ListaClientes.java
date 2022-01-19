@@ -31,15 +31,6 @@ public class ListaClientes {
         return clientes;
     }
 
-    public void setClientes(Cliente[] clientes) {
-        this.clientes = clientes;
-    }
 
-    public int getNumClientes() {
-        return numClientes;
-    }
 
-    public void setNumClientes(int numClientes) {
-        this.numClientes = numClientes;
-    }
 }

@@ -16,27 +16,41 @@ public class UPMBank {
 
         while (stayMenu) {
             try {
-                System.out.print("Introduzca la operación que desea realizar:\n\t1)Dar de alta\n\t2)Crear cuenta\n\t3)Realizar depósito\n\t4)Realizar extracción\n\t5)Datos de cliente\n\t6)Hacer transferecia\n\t7)Pedir préstamo hipotecario\n\t8)Consultar tabla de amortización\n\t0)Salir\n");
+                System.out.print("Introduzca la operación que desea realizar:\n\t1)Dar de alta\n\t2)Crear cuenta\n\t3)Realizar depósito\n\t4)Realizar extracción\n\t5)Datos de cliente\n\t6)Hacer transferecia\n\t7)Pedir préstamo hipotecario\n\t0)Salir\n");
                 int opcion = scan.nextInt();
                 if (opcion == 1) {
-                    darseDeAlta();
+                    if (listaClientes.numClientes == 20){
+                        System.out.println("Número máximo de clientes alcanzado");
+                    }else {
+                        darseDeAlta();
+                    }
                 } else if (opcion == 2) {
-                    if (listaClientes.numClientes > 0) {
-                        System.out.println("DNI: ");
-                        scan.nextLine();
-                        String dni = scan.nextLine();
-                        if (estaDadoDeAlta(dni)) {
-                            crearCuenta(listaClientes.getCliente(dni));
+                    if (cuentasGlobal.numCuentas == 200){
+                        System.out.println("Número máximo de cuentas alcanzado");
+                    }else {
+                        if (listaClientes.numClientes > 0) {
+                            System.out.println("DNI: ");
+                            scan.nextLine();
+                            String dni = scan.nextLine();
+                            if (estaDadoDeAlta(dni)) {
+                                if (listaClientes.getCliente(dni).getCuentas().numCuentas != 10) {
+                                    crearCuenta(listaClientes.getCliente(dni));
+                                }else{
+                                    System.out.println("Número máximo de cuentas para el cliente alcanzado");
+                                    System.out.println("Pulse ENTER para continuar.");
+                                    scan.nextLine();
+                                }
+                            } else {
+                                System.out.println("Error. El cliente no tiene ninguna cuenta creada.");
+                                System.out.println("Pulse ENTER para continuar.");
+                                scan.nextLine();
+                            }
                         } else {
-                            System.out.println("Error. El cliente no tiene ninguna cuenta creada.");
+                            System.out.println("Ningún cliente dado de alta");
                             System.out.println("Pulse ENTER para continuar.");
                             scan.nextLine();
+                            scan.nextLine();
                         }
-                    } else {
-                        System.out.println("Ningún cliente dado de alta");
-                        System.out.println("Pulse ENTER para continuar.");
-                        scan.nextLine();
-                        scan.nextLine();
                     }
                 } else if (opcion == 3) {
                     if (listaClientes.numClientes > 0) {
@@ -100,7 +114,7 @@ public class UPMBank {
                         System.out.println("Ningún cliente no dado de alta");
                     }
 
-                }else if (opcion == 7) {
+                } else if (opcion == 7) {
                     if (listaClientes.numClientes > 0) {
                         System.out.println("DNI: ");
                         scan.nextLine();
@@ -112,7 +126,7 @@ public class UPMBank {
                             scan.nextLine();
                         }
                     } else {
-                        System.out.println("Ningún cliente no dado de alta");
+                        System.out.println("Ningún cliente dado de alta");
                     }
 
                 } else if (opcion == 0) {
@@ -156,20 +170,26 @@ public class UPMBank {
                     cliente.getCuentas().imprimir();
                     cuentaElegida = scan.nextInt() - 1;
                     boolean cifraCorrecta = false;
-                    while (!cifraCorrecta) {
-                        cuenta = cliente.getCuentas().getListaCuentas()[cuentaElegida];
-                        importe = Prestamo.setImporte();
-                        anios = Prestamo.setAnios();
-                        interesMensual = Prestamo.setInteresMensual();
-                        cuenta.saldo += importe;
-                        Prestamo prestamoObj = new Prestamo(importe, anios, interesMensual);
-                        cuenta.getPrestamos().anadirPrestamo(prestamoObj);
-                        System.out.println("Ingreso realizado correctamente.");
-                        System.out.println("Pulse ENTER para continuar o '0' para volver.");
+                    if (cliente.getCuentas().getListaCuentas()[cuentaElegida].getPrestamos().numeroPrestamos != 50) {
+                        while (!cifraCorrecta) {
+                            cuenta = cliente.getCuentas().getListaCuentas()[cuentaElegida];
+                            importe = Prestamo.setImporte();
+                            anios = Prestamo.setAnios();
+                            interesMensual = Prestamo.setInteresMensual();
+                            cuenta.saldo += importe;
+                            Prestamo prestamoObj = new Prestamo(importe, anios, interesMensual);
+                            cuenta.getPrestamos().anadirPrestamo(prestamoObj);
+                            System.out.println("Ingreso realizado correctamente.");
+                            System.out.println("Pulse ENTER para continuar o '0' para volver.");
+                            scan.nextLine();
+                            scan.nextLine();
+                            menuPrestamo = false;
+                            cifraCorrecta = true;
+                        }
+                    } else {
+                        System.out.println("Número máximo de préstamos alcanzado");
+                        System.out.println("\n Pulse ENTER para continuar");
                         scan.nextLine();
-                        scan.nextLine();
-                        menuPrestamo = false;
-                        cifraCorrecta = true;
                     }
                 } catch (Exception e) {
                     System.out.println("Número inválido.");
@@ -230,6 +250,18 @@ public class UPMBank {
         scan.nextLine();
     }
 
+    public static boolean numeroCuentaRepetido(long NC) {
+        boolean numeroCuentaRepetido = false;
+        int i = 0;
+        while (i < cuentasGlobal.numCuentas){
+            if (cuentasGlobal.getListaCuentas()[i].getNumeroCuenta() == NC){
+                numeroCuentaRepetido = true;
+            }
+            i++;
+        }
+        return numeroCuentaRepetido;
+    }
+
     public static void crearCuenta(Cliente cliente) throws Exception {
         Scanner scan = new Scanner(System.in);
         upmBankAscii.logo();
@@ -237,7 +269,10 @@ public class UPMBank {
         String volver = scan.nextLine();
         if (!volver.equals("0")) {
             TipoCuenta tipoCuenta = Cuenta.setTipoCuenta();
-            long numeroCuenta = NC.obtenerNC();
+            long numeroCuenta;
+            do {
+                numeroCuenta = NC.obtenerNC();
+            }while(numeroCuentaRepetido(numeroCuenta));
             int codigoSucursal = Main.CS;
             int codigoEntidad = 9010;
             int DC = digitoControl.obtenerDC(numeroCuenta, codigoSucursal, codigoEntidad);
@@ -277,58 +312,64 @@ public class UPMBank {
                         cuentaElegida = scan.nextInt() - 1;
                     }
                     boolean destinoCorrecto = false;
-                    while (!destinoCorrecto) {
-                        System.out.println("IBAN destino: ");
-                        scan.nextLine();
-                        String IBANdestino = scan.nextLine();
-                        int i = 0;
-                        boolean cuentaEncontrada = false;
-                        while (i < cuentasGlobal.numCuentas && !cuentaEncontrada) {
-                            if (cuentasGlobal.getListaCuentas()[i].getIBAN().equals(IBANdestino) && !IBANdestino.equals(cliente.getCuentas().getListaCuentas()[cuentaElegida].getIBAN())) {
-                                cuentaEncontrada = true;
+                    if (cliente.getCuentas().getListaCuentas()[cuentaElegida].getTransferenciasEmitidas().numeroTransferencias != 50) {
+                        while (!destinoCorrecto) {
+                            System.out.println("IBAN destino: ");
+                            scan.nextLine();
+                            String IBANdestino = scan.nextLine();
+                            int i = 0;
+                            boolean cuentaEncontrada = false;
+                            while (i < cuentasGlobal.numCuentas && !cuentaEncontrada) {
+                                if (cuentasGlobal.getListaCuentas()[i].getIBAN().equals(IBANdestino) && !IBANdestino.equals(cliente.getCuentas().getListaCuentas()[cuentaElegida].getIBAN())) {
+                                    cuentaEncontrada = true;
+                                }
+                                i++;
                             }
-                            i++;
-                        }
-                        if (cuentaEncontrada) {
-                            double importe = 0;
-                            boolean cancelar = false;
-                            while (importe <= 0) {
-                                System.out.println("Importe: ");
-                                importe = scan.nextDouble();
-                                if (importe > cliente.getCuentas().getListaCuentas()[cuentaElegida].saldo){
-                                    System.out.println("Saldo insuficiente.\nPulse ENTER para continuar o '0' para volver al menú.");
-                                    importe = 0;
-                                    scan.nextLine();
-                                    String volver2 = scan.nextLine();
-                                    if (volver2.equals("0")) {
-                                        cancelar = true;
-                                        importe = 1;
+                            if (cuentaEncontrada) {
+                                double importe = 0;
+                                boolean cancelar = false;
+                                while (importe <= 0) {
+                                    System.out.println("Importe: ");
+                                    importe = scan.nextDouble();
+                                    if (importe > cliente.getCuentas().getListaCuentas()[cuentaElegida].saldo) {
+                                        System.out.println("Saldo insuficiente.\nPulse ENTER para continuar o '0' para volver al menú.");
+                                        importe = 0;
+                                        scan.nextLine();
+                                        String volver2 = scan.nextLine();
+                                        if (volver2.equals("0")) {
+                                            cancelar = true;
+                                            importe = 1;
+                                        }
                                     }
                                 }
-                            }
-                            if (!cancelar) {
-                                cliente.getCuentas().getListaCuentas()[cuentaElegida].getTransferenciasEmitidas().anadirTransferencia(new Transferencia(importe, cliente.getCuentas().getListaCuentas()[cuentaElegida], cuentasGlobal.getListaCuentas()[i - 1], TipoTransferencia.Emitida));
-                                cuentasGlobal.getListaCuentas()[i - 1].getTransferenciasRecibidas().anadirTransferencia(new Transferencia(importe, cliente.getCuentas().getListaCuentas()[cuentaElegida], cuentasGlobal.getListaCuentas()[i - 1], TipoTransferencia.Recibida));
-                                cuentasGlobal.getListaCuentas()[i - 1].saldo += importe;
-                                cliente.getCuentas().getListaCuentas()[cuentaElegida].saldo -= importe;
-                            }
+                                if (!cancelar) {
+                                    cliente.getCuentas().getListaCuentas()[cuentaElegida].getTransferenciasEmitidas().anadirTransferencia(new Transferencia(importe, cliente.getCuentas().getListaCuentas()[cuentaElegida], cuentasGlobal.getListaCuentas()[i - 1], TipoTransferencia.Emitida));
+                                    cuentasGlobal.getListaCuentas()[i - 1].getTransferenciasRecibidas().anadirTransferencia(new Transferencia(importe, cliente.getCuentas().getListaCuentas()[cuentaElegida], cuentasGlobal.getListaCuentas()[i - 1], TipoTransferencia.Recibida));
+                                    cuentasGlobal.getListaCuentas()[i - 1].saldo += importe;
+                                    cliente.getCuentas().getListaCuentas()[cuentaElegida].saldo -= importe;
+                                }
 
-                            destinoCorrecto = true;
-                            menuTransferencia = false;
-
-                        } else {
-                            if (IBANdestino.equals(cliente.getCuentas().getListaCuentas()[cuentaElegida].getIBAN())){
-                                System.out.println("No es posible hacer una transferencia a la misma cuenta de origen.");
-                            }else {
-                                System.out.println("Cuenta no encontrada. ");
-                            }
-                            System.out.println("\nPulse ENTER para continuar o '0' para volver al menú.");
-                            String volver1 = scan.nextLine();
-                            if (volver1.equals("0")) {
                                 destinoCorrecto = true;
                                 menuTransferencia = false;
+
+                            } else {
+                                if (IBANdestino.equals(cliente.getCuentas().getListaCuentas()[cuentaElegida].getIBAN())) {
+                                    System.out.println("No es posible hacer una transferencia a la misma cuenta de origen.");
+                                } else {
+                                    System.out.println("Cuenta no encontrada. ");
+                                }
+                                System.out.println("\nPulse ENTER para continuar o '0' para volver al menú.");
+                                String volver1 = scan.nextLine();
+                                if (volver1.equals("0")) {
+                                    destinoCorrecto = true;
+                                    menuTransferencia = false;
+                                }
                             }
                         }
+                    } else {
+                        System.out.println("Número máximo de transferencias alcanzado.");
+                        System.out.println("\n Pulse ENTER para continuar");
+                        scan.nextLine();
                     }
                 } catch (Exception e) {
                     System.out.println("Número inválido.");
@@ -340,11 +381,10 @@ public class UPMBank {
 
     public static void generarMatrizTransferencias() throws IOException {
         BufferedWriter escribir = new BufferedWriter(new FileWriter("matriz.txt"));
-        for (int i = 0;i < cuentasGlobal.numCuentas; i++){
+        for (int i = 0; i < cuentasGlobal.numCuentas; i++) {
             escribir.write(cuentasGlobal.getListaCuentas()[i].getIBAN());
             escribir.newLine();
         }
-
 
 
         try {
@@ -355,11 +395,12 @@ public class UPMBank {
                 for (int h = 0; h < cuentasGlobal.numCuentas; h++) {
                     String IBAN = cuentasGlobal.getListaCuentas()[h].getIBAN();
                     matrizTransferencias[j][h] = ListaTrasferencias.getTotalTransferenciaCuenta(IBAN, cuenta);
-                    escribir.write(String.format("%10.2f",matrizTransferencias[j][h]));
+                    escribir.write(String.format("%10.2f", matrizTransferencias[j][h]));
                 }
             }
             escribir.close();
-        }catch(Exception ignored){}
+        } catch (Exception ignored) {
+        }
 
     }
 
@@ -377,26 +418,32 @@ public class UPMBank {
                     cliente.getCuentas().imprimir();
                     cuentaElegida = scan.nextInt() - 1;
                     boolean cifraCorrecta = false;
-                    while (!cifraCorrecta) {
-                        System.out.println("Importe: ");
-                        double ingreso = scan.nextDouble();
-                        if (ingreso > 0) {
-                            System.out.println("Ingreso realizado correctamente.");
-                            cliente.getCuentas().getListaCuentas()[cuentaElegida].getMovimientos().anadirMovimiento(new Movimiento(ingreso, TipoMovimiento.Ingreso));
-                            cliente.getCuentas().getListaCuentas()[cuentaElegida].saldo += ingreso;
-                            System.out.println("Pulse ENTER para continuar o '0' para volver.");
-                            scan.nextLine();
-                            scan.nextLine();
-                            menuDeposito = false;
-                            cifraCorrecta = true;
-                        } else {
-                            System.out.println("Número inválido.\\nPulse ENTER para continuar o '0' para volver al menú.");
-                            String volver1 = scan.nextLine();
-                            if (volver1.equals("0")) {
-                                cifraCorrecta = true;
+                    if (cliente.getCuentas().getListaCuentas()[cuentaElegida].getMovimientos().numMovimientos != 50) {
+                        while (!cifraCorrecta) {
+                            System.out.println("Importe: ");
+                            double ingreso = scan.nextDouble();
+                            if (ingreso > 0) {
+                                System.out.println("Ingreso realizado correctamente.");
+                                cliente.getCuentas().getListaCuentas()[cuentaElegida].getMovimientos().anadirMovimiento(new Movimiento(ingreso, TipoMovimiento.Ingreso));
+                                cliente.getCuentas().getListaCuentas()[cuentaElegida].saldo += ingreso;
+                                System.out.println("Pulse ENTER para continuar o '0' para volver.");
+                                scan.nextLine();
+                                scan.nextLine();
                                 menuDeposito = false;
+                                cifraCorrecta = true;
+                            } else {
+                                System.out.println("Número inválido.\\nPulse ENTER para continuar o '0' para volver al menú.");
+                                String volver1 = scan.nextLine();
+                                if (volver1.equals("0")) {
+                                    cifraCorrecta = true;
+                                    menuDeposito = false;
+                                }
                             }
                         }
+                    } else {
+                        System.out.println("Número máximo de movimientos alcanzado");
+                        System.out.println("\n Pulse ENTER para continuar");
+                        scan.nextLine();
                     }
                 } catch (Exception e) {
                     System.out.println("Número inválido.");
@@ -420,26 +467,32 @@ public class UPMBank {
                     cliente.getCuentas().imprimir();
                     cuentaElegida = scan.nextInt() - 1;
                     boolean cifraCorrecta = false;
-                    while (!cifraCorrecta) {
-                        System.out.println("Importe: ");
-                        double extraccion = scan.nextDouble();
-                        if (extraccion <= cliente.getCuentas().getListaCuentas()[cuentaElegida].saldo && extraccion > 0) {
-                            System.out.println("Extracción realizada correctamente.");
-                            cliente.getCuentas().getListaCuentas()[cuentaElegida].getMovimientos().anadirMovimiento(new Movimiento(extraccion, TipoMovimiento.Extracción));
-                            cliente.getCuentas().getListaCuentas()[cuentaElegida].saldo -= extraccion;
-                            System.out.println("Pulse ENTER para continuar o '0' para volver.");
-                            scan.nextLine();
-                            scan.nextLine();
-                            menuExtraccion = false;
-                            cifraCorrecta = true;
-                        } else {
-                            System.out.println("Saldo insuficiente.\\nPulse ENTER para continuar o '0' para volver al menú.");
-                            String volver1 = scan.nextLine();
-                            if (volver1.equals("0")) {
-                                cifraCorrecta = true;
+                    if (cliente.getCuentas().getListaCuentas()[cuentaElegida].getMovimientos().numMovimientos != 50) {
+                        while (!cifraCorrecta) {
+                            System.out.println("Importe: ");
+                            double extraccion = scan.nextDouble();
+                            if (extraccion <= cliente.getCuentas().getListaCuentas()[cuentaElegida].saldo && extraccion > 0) {
+                                System.out.println("Extracción realizada correctamente.");
+                                cliente.getCuentas().getListaCuentas()[cuentaElegida].getMovimientos().anadirMovimiento(new Movimiento(extraccion, TipoMovimiento.Extracción));
+                                cliente.getCuentas().getListaCuentas()[cuentaElegida].saldo -= extraccion;
+                                System.out.println("Pulse ENTER para continuar o '0' para volver.");
+                                scan.nextLine();
+                                scan.nextLine();
                                 menuExtraccion = false;
+                                cifraCorrecta = true;
+                            } else {
+                                System.out.println("Saldo insuficiente.\\nPulse ENTER para continuar o '0' para volver al menú.");
+                                String volver1 = scan.nextLine();
+                                if (volver1.equals("0")) {
+                                    cifraCorrecta = true;
+                                    menuExtraccion = false;
+                                }
                             }
                         }
+                    } else {
+                        System.out.println("Número máximo de movimientos alcanzado");
+                        System.out.println("\n Pulse ENTER para continuar");
+                        scan.nextLine();
                     }
                 } catch (Exception e) {
                     System.out.println("Número inválido. Intente de nuevo.");
@@ -484,6 +537,7 @@ public class UPMBank {
 
     public static void consultaDatos(Cliente cliente) {
         upmBankAscii.logo();
+        String opcion = "";
         Scanner scan = new Scanner(System.in);
         System.out.println("Consultar datos de cliente\nPulse ENTER para continuar o '0' para volver.");
         String volver = scan.nextLine();
@@ -499,8 +553,8 @@ public class UPMBank {
                 e.printStackTrace();
             }
             while (menu) {
-                System.out.println("\n1)Ver transacciones\n2)Salir");
-                String opcion = scan.nextLine();
+                System.out.println("\n1)Ver transacciones\n2)Consultar tablas de amortización\n3)Salir");
+                opcion = scan.nextLine();
                 if (opcion.equals("1")) {
                     for (int i = 0; i < cliente.getCuentas().numCuentas; i++) {
                         cliente.getCuentas().getListaCuentas()[i].getMovimientos().imprimir(cliente.getCuentas().getListaCuentas()[i]);
@@ -511,13 +565,37 @@ public class UPMBank {
                     System.out.println("\n Pulse ENTER para continuar");
                     scan.nextLine();
                     menu = false;
-                } else if (opcion.equals("2")) {
+                } else if (opcion.equals("2") || opcion.equals("3")) {
                     menu = false;
                 } else {
                     System.out.println("Opción inválida");
                 }
             }
+            if (opcion.equals("2")) {
+                consultarTablas(cliente);
+            }
         }
+    }
+
+    public static void consultarTablas(Cliente cliente) {
+        upmBankAscii.logo();
+        String opcion = "";
+        Scanner scan = new Scanner(System.in);
+        System.out.println("Consultar tablas de amortización\nPulse ENTER para continuar o '0' para volver.");
+        String volver = scan.nextLine();
+        boolean menu = true;
+        if (!volver.equals("0")) {
+            for (int i = 0; i < cliente.getCuentas().numCuentas; i++) {
+                for (int j = 0; j < cliente.getCuentas().getListaCuentas()[i].getPrestamos().numeroPrestamos; j++) {
+                    cliente.getCuentas().getListaCuentas()[i].getPrestamos().getPrestamos()[j].imprimir(cliente.getCuentas().getListaCuentas()[i]);
+                    cliente.getCuentas().getListaCuentas()[i].getPrestamos().getPrestamos()[j].tablaAmortización();
+                    System.out.println("\n");
+                }
+            }
+        }
+
+        System.out.println("Pulse ENTER para continuar.");
+        scan.nextLine();
     }
 
     public static String generarDNI(Scanner scan) {
@@ -527,7 +605,7 @@ public class UPMBank {
             try {
                 System.out.println("DNI: ");
                 dni = scan.nextLine();
-                if (new validarDNI().validarNumero(dni) && new validarDNI().validarLetra(dni)) {
+                if (new validarDNI().validarNumero(dni.toUpperCase()) && new validarDNI().validarLetra(dni.toUpperCase())) {
                     dniCorrecto = true;
                 } else {
                     System.out.println("DNI incorrecto.");
@@ -546,11 +624,22 @@ public class UPMBank {
         boolean numeroCamposCorrecto;
         boolean digitoLetraCorrecto = true;
         boolean longitudCorrecta;
+        boolean correoNoRepetido = true;
         String[] correoAlfaNumerico = correo.split("@");
 
         terminacionCorrecta = correo.endsWith("@alumnos.upm.es") || correo.endsWith("@upm.es");
         longitudCorrecta = correoAlfaNumerico[0].length() > 0;
         numeroCamposCorrecto = correoAlfaNumerico.length == 2;
+        try {
+            int i = 0;
+            while(i < listaClientes.numClientes && correoNoRepetido) {
+                if (listaClientes.getClientes()[i].getCorreo().equals(correo)){
+                    correoNoRepetido = false;
+                    System.out.println("Correo electrónico asociado a otro cliente");
+                }
+                i++;
+            }
+        }catch (Exception ignored){}
 
 
         int i = 0;
@@ -559,7 +648,7 @@ public class UPMBank {
             i++;
         }
 
-        return (terminacionCorrecta && numeroCamposCorrecto && digitoLetraCorrecto && longitudCorrecta);
+        return (terminacionCorrecta && numeroCamposCorrecto && digitoLetraCorrecto && longitudCorrecta && correoNoRepetido);
     }
 
     public static String generarCorreo(Scanner scan) {
